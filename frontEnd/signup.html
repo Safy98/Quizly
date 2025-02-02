@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="CSS/login.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div class="container">
+        <div class="user-logo">
+            <img src="Images/image.png" alt="Quizly">
+        </div>
+      <div class="form-box">
+          <form id="signupForm" action="sumbit">
+            <div class="logo">
+                <img src="Images/Logo.png" alt="Quizly">
+            </div>
+         <div class="welcome">
+            <h1>Create an account</h1>
+            <p>sign up to get all features</p>
+         </div>
+         <div class="name-input">
+            <div>
+                <label for="name">Name</label>
+              </div>
+              <div>
+                <input type="text" id="name" name="name" required />
+              </div>
+          </div>
+          <div class="email-input">
+            <div>
+                <label for="email">Email</label>
+              </div>
+              <div>
+                <input type="email" id="email" name="email" required />
+              </div>
+          </div>
+          <div class="password-input">
+            <div>
+                <label for="password">Password</label>
+              </div>
+              <div>
+                <input type="password" id="password" name="password" required />
+              </div>
+          </div>
+          <div class="confirm-password-input">
+            <div>
+                <label for="confirm-password">Confirm Password</label>
+              </div>
+              <div>
+                <input type="password" id="confirm-password" name="conpassword" required />
+              </div>
+          </div>
+          <div>
+            <button type="submit">Sign up</button>
+          </div>
+          <p>Already have an account? <a href="login.html">Login</a></p>
+        </form>
+      </div>
+    </div>
+
+   <script src="JS/signup.js"></script>
+  </body>
+</html>

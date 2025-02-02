@@ -1,0 +1,206 @@
+:root {
+    --primary-color: #0d9488;
+    --secondary-color:#4B5563;
+    --background-color: #f3f4f6;
+    --text-color: #16191e;
+    --btn-hover: #00796b;
+  }
+  *,
+  ::after,
+  ::before {
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+  }
+  a{
+    text-decoration: none;
+  }
+  
+  body {
+    background-color: var(--background-color);
+    font-family: "Lato", serif;
+  }
+
+  nav .Logo img{
+    width: 200px;
+    height: 100px;
+  } 
+.actions button{
+    background-color: transparent;
+    border: none;
+
+}
+  nav {
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      position: absolute;
+      top: 0 ;
+      left: 0;
+      right: 0;
+    
+  }
+  .container{
+      width: 85%;
+      margin: auto;
+
+  }
+  nav .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* padding: 10px; */
+    /* background-color: var(--primary-color); */
+  }
+
+  nav .Logo {
+    margin-left: 20px;
+  }
+  nav .user {
+    display: flex;
+    padding: 20px;
+    justify-content: space-between;
+    gap: 40px;
+    font-size: 24px;
+  }
+
+
+
+.flex-it{
+   display: flex; 
+    align-items: center; 
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+
+  .content-empty{
+    text-align: center;
+}
+  .content-empty p:first-of-type{
+    font-size: 40px;
+    color: var(--text-color);
+    margin-block: 20px;
+}
+  .content-empty p:last-of-type{
+    font-size: 32px;
+    color: var(--secondary-color);
+    margin-block: 20px;
+}
+
+
+
+
+.filter{
+    margin-top: 104px;
+    font-size: 32px;
+    padding: 20px;
+    border-radius: 5px;
+}
+.filter .container {
+    display: flex;
+    justify-content: space-between;
+}
+.filter .counter span{
+    margin-inline: 5px;
+}
+.filter .counter button{
+   border: none;
+    
+}
+.filter .counter button i{
+    font-size: 20px;
+}
+.hide{
+    display: none;
+}
+
+
+
+
+.card {
+    width: 300px;
+    background: var(--background-color);
+    border-radius: 15px;
+    padding: 20px;
+
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+   
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.date {
+    color: #666;
+    font-size: 14px;
+}
+
+.actions i {
+    margin-left: 15px;
+    color: #666;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+
+.actions i.delete {
+    color: #dc3545;
+}
+
+.tags {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.tag {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+}
+
+.advance {
+    background-color: #6c757d;
+    color: white;
+}
+
+.questions {
+    background-color: #f0f0f0;
+    color: #666;
+}
+
+.language {
+    color: var(--primary-color);
+    font-size: 20px;
+    margin-bottom: 8px;
+}
+
+.description {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 15px;
+    line-height: 1.4;
+}
+
+.btn {
+    background-color: var(--primary-color);
+    border: none;
+    padding: 8px 25px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button.btn a{
+    font-size: 20px;
+
+    color: white;
+
+}
+
+button.btn:hover{
+    background-color: var(--btn-hover);
+}
