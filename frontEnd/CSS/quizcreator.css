@@ -41,6 +41,13 @@
       width: 85%;
       margin: auto;
 
+textarea {
+    max-height: 200px; /* Adjust to your preference */
+    overflow-y: auto; /* Adds scrollbar if content exceeds max height */
+    resize: vertical; /* Allows resizing only vertically */
+}
+    
+
   }
   nav .container {
     display: flex;
@@ -68,7 +75,6 @@
 
     font-size: 44px;
     text-align: center;
-    padding-block: 40px;
   }
 
   .Question-Creator .container{
@@ -95,9 +101,14 @@
     color: white;
     transition: background-color 0.3s ease;
 }
-
-button.btn:hover{
+.hide{
+    display: none;
+}
+.add-btn:hover{
     background-color: var(--btn-hover);
+}
+.save-btn:hover{
+    background-color: black;
 }
 
 .forms{
@@ -171,7 +182,8 @@ button.btn:hover{
 }
 
 .btn-group{
-    margin-top: 30px;
+    margin-block: 30px;
+
 display: flex;
 justify-content: space-between;
 
@@ -189,9 +201,44 @@ justify-content: space-between;
     color: var(--text-color);
 
 }
+.header{
+    display: flex;
+    padding-block: 40px;
+    text-align: center;
+    position: relative;
+
+}
+.header .text{
+    margin: auto;
+}
+.back a{
+    text-decoration: none;
+    color: white;
+}
+.header .back{
+    background-color: var(--primary-color);
+    border: none;
+    padding: 8px 25px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 20px;
+    color: white;
+    height: auto;
+    transition: background-color 0.3s ease;
+    position: absolute;
+}
+.header .back:hover{
+    background-color: var(--btn-hover);
+}
 .btn-group div:last-child button:hover{
     background-color: var(--primary-color);
     border-color: var(--btn-hover);
+}
+
+.logout{
+    background-color: transparent;
+    border: none;
+    font-size: 20px;
 }
 .questionAndIcon{
     display: flex;
@@ -201,6 +248,9 @@ justify-content: space-between;
     padding-top: 40px;
 }
 
+.add-btn{
+    border :solid var(--primary-color) 2px;
+}
 .add-answer :hover{
     color: black;
     cursor: pointer;
@@ -225,8 +275,6 @@ color: red;
     border: none;
     background-color: transparent;
 }
-
-/* sadas */
 
 
 

@@ -1,3 +1,4 @@
+from os import name
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -16,6 +17,7 @@ CORS(app)
 class User(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
     email = db.Column(db.String(25), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
     isAdmin = db.Column(db.Boolean, default=False, nullable=False)
@@ -54,6 +56,17 @@ class Quiz(db.Model):
                 } for a in q.answers]
             } for q in self.questions]
         }
+
+    def to_dict_headers_only(self):
+        return {
+            'id': self.id,
+            'topic': self.topic,
+            'level': self.level,
+            'description': self.description,
+            'created_at': self.created_at.isoformat(),
+            'NumberOfQuestions': len(self.questions)
+               
+        }
     
 class Question(db.Model):
     __tablename__ = 'question'
@@ -82,7 +95,7 @@ with app.app_context():
     isAdminExists = User.query.filter_by(email='safee.srio@gmail.com').first()
     if isAdminExists is None:
         print('Admin does not exist')
-        admin = User(email='safee.srio@gmail.com', isAdmin=True)
+        admin = User(email='safee.srio@gmail.com', isAdmin=True , name='Safee')
         admin.set_password('safee51')
         db.session.add(admin)
         db.session.commit()
@@ -98,12 +111,12 @@ def register():
         return jsonify({'success': False, 'message': 'Email already registered.'}), 400
 
     # Create a new user
-    user = User(email=data['email'])
+    user = User(email=data['email'],name=data['name'])
     user.set_password(data['password'])
     db.session.add(user)
     db.session.commit()
 
-    return jsonify({'success': True, 'message': 'Registration successful!'}), 201
+    return jsonify({'success': True, 'message': 'Registration successful!', 'user': {'id': user.id, 'isAdmin': user.isAdmin, 'email': user.email , 'name': user.name}}), 201
 
 @app.route('/addQuiz', methods=['POST'])
 def addQuiz():
@@ -153,6 +166,8 @@ def addQuiz():
 
     return jsonify({'success': True, 'message': 'Quiz added successfully!'}), 201
 
+
+
 @app.route('/deleteQuiz/<int:quizId>', methods=['DELETE'])
 def deleteQuiz(quizId):  
     # Accept quizId as a parameter
@@ -178,22 +193,104 @@ def deleteQuiz(quizId):
 @app.route('/getQuizes', methods=['GET'])
 def getQuizes():
     quizes = Quiz.query.all()
-    return jsonify({'success': True, 'quizes': [quiz.to_dict() for quiz in quizes]}), 200
+    # print([quiz['topic'] for quiz in quizes])
+    for quiz in quizes:
+        print(quiz.to_dict_headers_only())
+
+    return jsonify({'success': True, 'quizes': [quiz.to_dict_headers_only() for quiz in quizes]}), 200
+
+    
+
+
+@app.route('/updateQuiz/<int:quizId>', methods=['PUT'])
+def updateQuiz(quizId):
+    data = request.get_json()
+    # Validate the incoming data
+    if not data or 'topic' not in data or 'level' not in data or 'description' not in data or 'questions' not in data:
+        return jsonify({'success': False, 'message': 'Invalid quiz data.'}), 400
+
+    # Find the quiz by ID
+    UpdatedQuiz = Quiz.query.get(quizId)
+    if not UpdatedQuiz:
+        return jsonify({'success': False, 'message': 'Quiz not found.'}), 404
+
+
+
+    UpdatedQuiz.topic = data['topic']
+    UpdatedQuiz.level = data['level']
+    UpdatedQuiz.description = data['description']
+
+    for question in UpdatedQuiz.questions:
+        db.session.delete(question)
+
+    for question_data in data['questions']:
+        if 'questionText' not in question_data or 'questionType' not in question_data:
+            return jsonify({'success': False, 'message': 'Invalid question data.'}), 400
+
+        new_question = Question(
+            question_text=question_data['questionText'],
+            question_type=question_data['questionType'],
+            quiz=UpdatedQuiz
+        )
+
+        if question_data['questionType'] != 'paragraph':
+            if 'answers' not in question_data or not question_data['answers']:
+                return jsonify({'success': False, 'message': 'Answers are required for non-paragraph questions.'}), 400
+
+            for answer_data in question_data['answers']:
+                if 'answerText' not in answer_data or 'isCorrect' not in answer_data:
+                    return jsonify({'success': False, 'message': 'Invalid answer data.'}), 400
+
+                new_answer = Answer(
+                answerText=answer_data['answerText'],
+                isCorrect=answer_data['isCorrect'],
+                question=new_question
+                )
+
+
+                db.session.add(new_answer)
+
+        db.session.add(new_question)
+
+    # Add the quiz to the database session and commit
+    db.session.commit()
+
+    quizes = Quiz.query.all()
+    print([quiz.to_dict() for quiz in quizes])
+    return jsonify({'success': True, 'message': 'Quiz updated successfully!'}), 200
+
+
+@app.route('/getQuiz/<int:quizId>', methods=['GET'])
+def getQuiz(quizId):
+    # Validate the incoming data
+    if not quizId:
+        return jsonify({'success': False, 'message': 'Invalid quizId.'}), 400
+    
+    quiz = Quiz.query.get(quizId)
+    if not quiz:
+        return jsonify({'success': False, 'message': 'Quiz not found.'}), 404
+
+
+    return jsonify({'success': True, 'quiz': quiz.to_dict()}), 200
+
 
 
 @app.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
-
+    quizes = Quiz.query.all()
+    print([quiz.to_dict() for quiz in quizes])
     # Find the user by email
     user = User.query.filter_by(email=data['email']).first()
 
     # Check if the user exists and the password is correct
     if user and user.check_password(data['password']):
-        return jsonify({'success': True, 'message': 'Login successful!', 'user': {'id': user.id, 'isAdmin': user.isAdmin, 'email': user.email}})
+        return jsonify({'success': True, 'message': 'Login successful!', 'user': {'id': user.id, 'isAdmin': user.isAdmin, 'email': user.email , 'name': user.name}}), 200
     else:
         return jsonify({'success': False, 'message': 'Invalid email or password.'}), 401
 
 
+
 if __name__ == '__main__':
     app.run(debug=True)
+

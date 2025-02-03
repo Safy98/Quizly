@@ -154,23 +154,19 @@
     display: flex;
     gap: 10px;
     margin-bottom: 15px;
+
 }
 
 .tag {
     padding: 5px 12px;
     border-radius: 20px;
     font-size: 12px;
-}
-
-.advance {
     background-color: #6c757d;
     color: white;
+
 }
 
-.questions {
-    background-color: #f0f0f0;
-    color: #666;
-}
+
 
 .language {
     color: var(--primary-color);
@@ -180,6 +176,7 @@
 
 .description {
     color: #666;
+    height: 50px;
     font-size: 14px;
     margin-bottom: 15px;
     line-height: 1.4;
@@ -187,6 +184,8 @@
 
 .btn {
     background-color: var(--primary-color);
+    color: white;
+    font-size: 16px;
     border: none;
     padding: 8px 25px;
     border-radius: 5px;

@@ -30,7 +30,10 @@ form.addEventListener("submit", function (event) {
   // Password validation
   const password = passwordElement.value.trim();
   if (!validatePassword(password)) {
-    showError(passwordElement, "Password must be at least 6 characters long.");
+    showError(
+      passwordElement,
+      "Password must be at least 6 characters long and has special characters."
+    );
     passwordInput.focus();
     isValid = false;
   }
@@ -46,7 +49,6 @@ form.addEventListener("submit", function (event) {
   // If all validations pass, submit the form
   if (!isValid) return;
 
-
   sendRecieveData(name, email, password);
   // alert("Form submitted successfully!");
   // Uncomment the line below to submit the form
@@ -54,16 +56,21 @@ form.addEventListener("submit", function (event) {
 });
 
 function validateEmail(email) {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const emailRegex = /^(?=.{1,30}$)[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 }
 function validateName(name) {
-  // Regular expression to allow letters, spaces, hyphens, and apostrophes
   const nameRegex = /^[A-Za-z'-]{3,}(?:\s[A-Za-z'-]{3,})*$/;
-  return nameRegex.test(name);
+  return name.length <= 30 && nameRegex.test(name);
 }
+
+// function validatePassword(password) {
+//   return password.length >= 6;
+// }
+
 function validatePassword(password) {
-  return password.length >= 6;
+  const passwordRegex = /^(?=.*[!@#$%^&*()_+~\-={}\[\]:;"'<>,.?\/]).{6,}$/;
+  return passwordRegex.test(password);
 }
 
 function showError(input, message) {
@@ -96,6 +103,7 @@ async function sendRecieveData(name, email, password) {
 
   if (responeData.success === true) {
     window.location.href = "user.html";
+    localStorage.setItem("name", responeData.user.name.split(" ")[0]);
   } else {
     showError(emailElement, responeData.message);
     emailElement.focus();

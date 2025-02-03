@@ -10,6 +10,35 @@ const quizDescriptionTextAreaEle = document.querySelector("#description");
 let addAnswerEle;
 
 let questionCounter = 0;
+let editMode = false;
+let toUpdateQuiz;
+  if (localStorage.getItem("quiz")) {
+    ({quiz: toUpdateQuiz} = JSON.parse(localStorage.getItem("quiz")));
+    editMode = true;
+    console.log(toUpdateQuiz);
+    
+    quizTopicInputEle.value = toUpdateQuiz.topic;
+    quizLevelSelectEle.value = toUpdateQuiz.level;
+    quizDescriptionTextAreaEle.value = toUpdateQuiz.description;
+  
+    toUpdateQuiz.questions.forEach((question,index) => {
+      let Question = questionContainer.appendChild(createNewQuestion(index,question.questionText ));
+      Question.setAttribute("data-type",question.questionType);
+      question.answers.forEach((answer) => {
+        Question.appendChild(createNewAnswer(question.questionType,answer.answerText , answer.isCorrect ? "checked" : ""));
+      });
+      Question.appendChild(appendAddAnswerEle());
+    });
+    
+    questionCounter  = toUpdateQuiz.questions.length;
+
+    localStorage.removeItem("quiz");
+  }
+
+
+
+
+
 
 function appendAddAnswerEle() {
   let addAnswerEle = document.createElement("div");
@@ -37,7 +66,7 @@ AddQuestionBtnEle.addEventListener("click", function () {
   </div>
 `;
 
-  const LastQuestion = questionContainer.appendChild(createNewQuestion());
+  const LastQuestion = questionContainer.appendChild(createNewQuestion(questionCounter));
 
   let type;
   if (questionTypeInputEle.value === "Single") {
@@ -65,10 +94,13 @@ questionContainer.addEventListener("click", function (event) {
     const parent = currentEle.parentElement;
 
     const previousQuestionType = parent.getAttribute("data-type");
-    if (countNumberOfAnswers(parent) === 20) {
-      showError(question, "A questioncan't have more than 20 options");
+    if (countNumberOfAnswers(parent) === 5) {
+      console.log("you reached the max limit");
+      
+      showError(parent.querySelector('input'), "A question can't have more than 20 options");
       return;
     }
+
     let newChoiceEle;
     if (previousQuestionType == "checkbox") {
       newChoiceEle = createNewAnswer("checkbox");
@@ -82,17 +114,20 @@ questionContainer.addEventListener("click", function (event) {
 function countNumberOfAnswers(question) {
   return question.querySelectorAll(".answer-option").length;
 }
-function createNewQuestion() {
+function createNewQuestion( index ,questionInput = '') {
   const newQuestionEle = document.createElement("div");
   newQuestionEle.classList.add("question");
   newQuestionEle.classList.add("form-group");
   newQuestionEle.innerHTML = `
   <div class="questionAndIcon">
-    <label for="">Question <span>${questionCounter + 1}</span></label>
+    <label for="">Question <span>${index + 1}</span></label>
     <button><i class="fas fa-trash-alt delete"></i></button>
   </div>
-  <input  type="text" placeholder="Enter your question" />
+  <input  type="text" placeholder="Enter your question" maxlength="100" />
  `;
+
+ newQuestionEle.querySelector('input').value = questionInput;
+
 
   newQuestionEle
     .querySelector(".questionAndIcon")
@@ -108,21 +143,23 @@ function createNewQuestion() {
     });
   return newQuestionEle;
 }
-function createNewAnswer(type) {
+function createNewAnswer(type,answerInput = '',isChecked = '') {
   const newChoiceEle = document.createElement("div");
   newChoiceEle.classList.add("answer-option");
   newChoiceEle.classList.add("form-group");
   newChoiceEle.innerHTML = `
   <div class="choice-wrapper">
-      <input type=${type} name="answer" id="answer1"  />
-      <input type="text" class="answer-input" placeholder="Type your answer here" />
+      <input type=${type} name="answer" id="answer1" ${isChecked} />
+      <input type="text" class="answer-input" placeholder="Type your answer here" maxlength="100" />
       <button class="delete-btn">
       <i class="fas fa-trash-alt"></i>
         </button>
   </div>`;
 
+  newChoiceEle.querySelector(".answer-input").value = answerInput;
   newChoiceEle.querySelector(".delete-btn").addEventListener("click", () => {
     newChoiceEle.remove();
+
   });
 
   return newChoiceEle;
@@ -168,7 +205,7 @@ function anyAnswerEmpty(question) {
     return false;
   }
   const answers = question.querySelectorAll(".answer-option");
-
+  
   if (answers.length < 2) {
     showError(question.querySelector("input"), "A question must have two options at least");
     return true;
@@ -176,7 +213,7 @@ function anyAnswerEmpty(question) {
   answers.forEach(function (oneAnswer) {
     let notEmpty;
     const answerInput = oneAnswer.querySelector(".answer-input");
-    notEmpty = validateInput(answerInput);
+    notEmpty = CheckEmptyInput(answerInput);
 
     if (!notEmpty) {
       emptyCounter++;
@@ -191,10 +228,10 @@ function anyAnswerEmpty(question) {
 
   return emptyCounter;
 }
-function anyQuestionEmpty(question) {
+function checkQuestionEmpty(question) {
   let emptyCounter = 0;
   const questionInput = question.querySelector("input");
-  if (!validateInput(questionInput)) {
+  if (!CheckEmptyInput(questionInput)) {
     showError(questionInput, "Question can't be empty");
     emptyCounter++;
   } else {
@@ -204,26 +241,88 @@ function anyQuestionEmpty(question) {
   return emptyCounter;
 }
 
+function checkLongQuestion(question) {
+  const questionInput = question.querySelector("input");
+  if (!CheckInputLength(questionInput, 100)) {
+    showError(questionInput, "Question can't be more than 100 characters");
+    return true;
+  } else {
+    clearError(questionInput);
+    return false;
+  }
+}
+
+function checkLongAnswer(question) {
+  const answers = question.querySelectorAll(".answer-option");
+  answers.forEach(function (oneAnswer) {
+    const answerInput = oneAnswer.querySelector(".answer-input");
+    
+    if (!CheckInputLength(answerInput, 100)) {
+      showError(question.querySelector("input"), "Answer can't be more than 100 characters");
+      return true;
+    } else {
+      clearError(question.querySelector("input"));
+      return false;
+    }
+  });
+}
+
+function CheckInputLength(input,allowedLength){ 
+
+  if (input.value.length > allowedLength){
+    return false;
+  }
+  else{
+    return true;
+  }
+
+}
+
 saveBtnEle.addEventListener("click", function () {
   const allQuestions = questionContainer.querySelectorAll(".question");
   let validData = true;
-  if (!validateInput(quizTopicInputEle)) {
+  if (!CheckEmptyInput(quizTopicInputEle)) {
     showError(quizTopicInputEle, "Topic can't be empty");
-  } else {
+    validData = false;
+  }
+  else if (!CheckInputLength(quizTopicInputEle,30)) {
+    showError(quizTopicInputEle, "Topic can't be more than 30 characters");
+  }
+  else {
     clearError(quizTopicInputEle);
   }
-  if (!validateInput(quizDescriptionTextAreaEle)) {
+
+
+  if (!CheckEmptyInput(quizDescriptionTextAreaEle)) {
     showError(quizDescriptionTextAreaEle, "Description can't be empty");
-  } else {
+    validData = false;
+  }
+  else if (!CheckInputLength(quizDescriptionTextAreaEle,100)) {
+    showError(quizDescriptionTextAreaEle, "Description can't be more than 200 characters");
+  }
+  else {
     clearError(quizDescriptionTextAreaEle);
   }
+
+
   allQuestions.forEach(function (question) {
-    if (anyQuestionEmpty(question)) {
+    if (checkQuestionEmpty(question)) {
+      validData = false;
+      return;
+    }
+    else if (checkLongQuestion(question)) {
       validData = false;
       return;
     }
 
     if (anyAnswerEmpty(question)) {
+      console.log("hi1");
+      
+      validData = false;
+      return;
+    }
+    else if (checkLongAnswer(question)) {
+      console.log("hi2");
       validData = false;
       return;
     }
@@ -251,18 +350,35 @@ saveBtnEle.addEventListener("click", function () {
 });
 
 async function sendQuiz(quiz){
+  let response;
+  if(editMode){
+    console.log("hi",toUpdateQuiz.id);
+   
+    response = await fetch(`http://127.0.0.1:5000/updateQuiz/${toUpdateQuiz.id}`, {
+      method: "PUT",
+      body: JSON.stringify(quiz),
+      headers: {
+          "Content-Type": "application/json"
+      }
+  
+      
+    });
+  }
+  else
+  {
+    response = await fetch('http://127.0.0.1:5000/addQuiz', {
+      method: "POST",
+      body: JSON.stringify(quiz),
+      headers: {
+          "Content-Type": "application/json"
+      }
+  
+      
+    });
+  }
+  
 
-  const respone = await fetch('http://127.0.0.1:5000/addQuiz', {
-    method: "POST",
-    body: JSON.stringify(quiz),
-    headers: {
-        "Content-Type": "application/json"
-    }
-
-    
-  });
-
-  let responseData = await respone.json();
+  let responseData = await response.json();
   return responseData;
 }
 
@@ -290,7 +406,7 @@ function collectData() {
   return quiz;
 }
 
-function validateInput(questionInput) {
+function CheckEmptyInput(questionInput) {
   if (questionInput.value.trim() === "") {
     return false;
   } else {

@@ -11,8 +11,8 @@ const addQuiz = function (id,topic, level, description, questions,date) {
                 <div class="card-header">
                     <div class="date">${date}</div>
                     <div class="actions">
-                        <button> <i class="fas fa-pen"></i></button>
-                        <button><i class="fas fa-trash-alt delete"></i></button>
+                        <!-- <button class="edit"> <i class="fas fa-pen"></i></button> -->
+                        <button ><i class="fas fa-trash-alt delete"></i></button>
                        
                     </div>
                 </div>
@@ -23,7 +23,9 @@ const addQuiz = function (id,topic, level, description, questions,date) {
                 <div class="card-content">
                     <h2 class="language">${topic}</h2>
                     <p class="description">${description}</p>
-                    <button class="btn">View</button>
+                      <button class="btn edit">Edit</button>
+  
+
                 </div>
             </div>
 
@@ -34,14 +36,65 @@ const addQuiz = function (id,topic, level, description, questions,date) {
     quizSpace.insertAdjacentHTML("beforeend", newCard);
 
     const newCardEle =document.getElementById(id);
-    const deleteBtn =newCardEle.querySelector("button i.delete");
+    const deleteBtn =newCardEle.querySelector(".delete");
+    const editBtn =newCardEle.querySelector(".edit");
     deleteBtn.addEventListener("click", function () {
     
      deleteQuiz(id);
      
     });
+
+    editBtn.addEventListener("click", function () {
+      // window.location.href = `editQuiz.html?id=${id}`;
+      getQuiz(id);
+    });
 };
 
+async function getQuiz(id) {
+  try {
+    const response = await fetch(`http://127.0.0.1:5000/getQuiz/${id}`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch quiz: ${response.statusText}`);
+    }
+    const data = await response.json();
+    localStorage.setItem("quiz", JSON.stringify(data));
+    window.location.href = `quizCreator.html`;
+    console.log(data);
+  } catch (error) {
+    console.log(error);
+  }
+ 
+  
+}
+// async function editQuiz(id) {
+
+//   const responseData = await fetch(`http://127.0.0.1:5000/editQuiz/${id}`, {
+ 
+//     method: "GET",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//   });
+//   const data = await responseData.json();
+//   console.log(data);
+  // window.location.href = `editQuiz.html?id=${id}&topic=${data.topic}&level=${data.level}&description=${data.description}`;
+
+  // data.questions.forEach((question) => {
+  //   const newQuestion = `
+  //   <div class="question">
+  //   <div class="questionAndIcon">
+  //   <label for="">Question <span>${question.id}</span></label>
+  //   <button><i class="fas fa-trash-alt delete"></i></button>
+  //   </div>
+  //   <input  type="text" placeholder="Enter your question" value="${question.question}"/>
+  // </div>
+  //   `;
+  //   questionContainer.insertAdjacentHTML("beforeend", newQuestion);
+  // });
+
+
+
+// }
 
 async function deleteQuiz(id) { 
 
@@ -64,10 +117,10 @@ async function deleteQuiz(id) {
 async function getQuizes() {
   const responseData = await fetch("http://127.0.0.1:5000/getQuizes");
   const data = await responseData.json();
+  console.log(data);  
   
   displayQuizes(data);
 }
-console.log(quizSpace.lastElementChild);
 
 
 function displayQuizes({quizes}) {
@@ -82,7 +135,7 @@ function displayQuizes({quizes}) {
       quizSpace.classList.add("flex-it");
     }
   quizes.forEach((quiz) => {
-    addQuiz(quiz.id,quiz.topic, quiz.level, quiz.description, quiz.questions.length,quiz.created_at.split("T")[0]);
+    addQuiz(quiz.id,quiz.topic, quiz.level, quiz.description,quiz.NumberOfQuestions,quiz.created_at.split("T")[0]);
   });
 }
 
