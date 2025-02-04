@@ -51,6 +51,7 @@ async function startQuiz(id) {
         let {quiz} = responeData;
         console.log(quiz);
         localStorage.setItem("userQuiz", JSON.stringify(quiz));
+        localStorage.setItem("userQuiz", JSON.stringify(quiz));
         window.location.href = `quiz.html`;
       }
       else

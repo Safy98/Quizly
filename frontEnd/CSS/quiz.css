@@ -41,13 +41,8 @@ body{
     color: var(--text-color);
     margin-bottom: 20px;
 }
-.quiz-space button{
 
-    display: block;
-    margin: auto;
-    margin-block: 30px;
-}
-.btn.next:hover{
+.btn-grp button:hover{
     background-color: var(--btn-hover);
 }
 
@@ -70,4 +65,17 @@ input[type="checkbox"] {
     font-weight: 800;
     font-size: 20px;
     margin-bottom: 20px ;
+}
+
+
+
+.btn-grp{
+
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.btn-grp button{
+    /* width: 100px; */
 }
