@@ -4,6 +4,7 @@
     --background-color: #f3f4f6;
     --text-color: #16191e;
     --btn-hover: #00796b;
+    font-size: 16px;
   }
   *,
   ::after,
@@ -14,11 +15,12 @@
   }
   a{
     text-decoration: none;
+    color: var(--text-color);
+
   }
   
   body {
     background-image: url(../Images/acaadeca-804c-4a3a-87dd-8e43294d3e35\ 1.png);
-    /* background-position: ; */
     background-size: cover;
     font-family: "Lato", serif;
   }
@@ -29,7 +31,7 @@
   } 
 
   nav {
-      /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.); */
+    /* display: none; */
       background-color: transparent;
       position: absolute;
       top: 0 ;
@@ -42,9 +44,9 @@
       margin: auto;
 
 textarea {
-    max-height: 200px; /* Adjust to your preference */
-    overflow-y: auto; /* Adds scrollbar if content exceeds max height */
-    resize: vertical; /* Allows resizing only vertically */
+    max-height: 200px;
+    overflow-y: auto; 
+    resize: vertical; 
 }
     
 
@@ -65,7 +67,7 @@ textarea {
     padding: 20px;
     justify-content: space-between;
     gap: 40px;
-    font-size: 24px;
+    font-size: 1.5rem;
   }
 
   .Question-Creator{
@@ -73,7 +75,7 @@ textarea {
   }
   .Question-Creator h2 {
 
-    font-size: 44px;
+    font-size: 2.75rem;
     text-align: center;
   }
 
@@ -87,7 +89,7 @@ textarea {
   }
 
   hr {
-    font-size: large;
+    font-size: 1rem;
     color: #16191e;
     width: 2px;
   }
@@ -97,7 +99,7 @@ textarea {
     padding: 8px 25px;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 20px;
+    font-size: 1.25rem;
     color: white;
     transition: background-color 0.3s ease;
 }
@@ -124,7 +126,7 @@ textarea {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
-    font-size: 20px;
+    font-size: 1.25rem;
     color: #0d9488;
 }
 
@@ -135,7 +137,7 @@ textarea {
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
-    font-size: 16px;
+    font-size: 1rem;
     background-color: #f9fafb;
     transition: border-color 0.3s ease;
 }
@@ -153,14 +155,12 @@ textarea {
     min-height: 100px;
 }
 
-/* Question Styles */
 .question {
     margin-top: 20px;
 }
 
 
 .question label {
-    /* display: block; */
     margin-bottom: 5px;
     font-weight: bold;
     color: #0d9488;
@@ -172,7 +172,7 @@ textarea {
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
-    font-size: 16px;
+    font-size: 1rem;
     background-color: #f9fafb;
 }
 
@@ -221,11 +221,12 @@ justify-content: space-between;
     padding: 8px 25px;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 20px;
+    font-size: 1.25rem;
     color: white;
     height: auto;
     transition: background-color 0.3s ease;
     position: absolute;
+    bottom: -2px;
 }
 .header .back:hover{
     background-color: var(--btn-hover);
@@ -238,7 +239,7 @@ justify-content: space-between;
 .logout{
     background-color: transparent;
     border: none;
-    font-size: 20px;
+    font-size: 1.25rem;
 }
 .questionAndIcon{
     display: flex;
@@ -257,16 +258,16 @@ justify-content: space-between;
 }
 .add-answer button{
     color: var(--secondary-color);
-    font-size: 20px;
+    font-size: 1.25rem;
 }
 .add-answer button i {
     color: var(--secondary-color)   !important;
-    font-size: 16px;
+    font-size: 1rem;
 } 
 
 
 .forms button i{
-font-size: 20px;
+font-size: 1.25rem;
 color: red;
 
 }
@@ -284,28 +285,22 @@ color: red;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    /* background-color: white; */
     padding: 12px 16px;
     border-radius: 8px;
     gap: 20px;
-    /* border: 1px solid #e0e0e0; */
 }
 
-.answer-option.selected {
-    /* background-color: #e8f5e9; */
-    /* border-color: green; */
-}
+
 
 .error-message {
     color: red;
-    font-size: 18px;
+    font-size: 1.125rem;
     margin-block: 5px;
 }
 
 input.invalid-input {
     display: block;
     border: 2px solid red !important;  
-    /* background-color: #ffe6e6 !important;   */
     outline: none;
   }
 
@@ -333,7 +328,7 @@ input[type="checkbox"] {
 .answer-input {
     border: none;
     background: none;
-    font-size: 14px;
+    font-size: .875rem;
     color: #333;
     width: 100%;
     outline: none;
@@ -343,10 +338,6 @@ input[type="checkbox"] {
     color: #999;
 }
 
-/* Style for input in selected answer */
-.selected .answer-input {
-    /* background-color: #e8f5e9; */
-}
 
 .delete-btn{
     position: absolute;
@@ -356,4 +347,21 @@ input[type="checkbox"] {
 .add-answer button{
     border: none;
     background-color: transparent;
+}
+
+@media screen and (max-width: 576px) {
+    :root{
+        font-size: 12px;
+    }
+      nav .Logo img{
+    width: 140px;
+    height: 70px;
+  } 
+    .container{
+        width: 100%;
+  
+    }
+    .user .fa-user-tie{
+        display: none;
+    }
 }

@@ -1,129 +1,122 @@
 :root {
     --primary-color: #0d9488;
-    --secondary-color:#4B5563;
+    --secondary-color: #4B5563;
     --background-color: #f3f4f6;
     --text-color: #16191e;
     --btn-hover: #00796b;
-  }
-  *,
-  ::after,
-  ::before {
-    margin: 0px;
-    padding: 0px;
+}
+
+*,
+::after,
+::before {
+    margin: 0;
+    padding: 0;
     box-sizing: border-box;
-  }
-  a{
+}
+
+a {
     text-decoration: none;
-  }
-  
-  body {
+    color: var(--text-color);
+}
+
+body {
     background-color: var(--background-color);
     font-family: "Lato", serif;
-  }
-
-  nav .Logo img{
-    width: 200px;
-    height: 100px;
-  } 
-.actions button{
-    background-color: transparent;
-    border: none;
-
 }
-  nav {
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-      position: absolute;
-      top: 0 ;
-      left: 0;
-      right: 0;
-    
-  }
-  .container{
-      width: 85%;
-      margin: auto;
 
-  }
-  nav .container {
+.container {
+    width: 85%;
+    margin: auto;
+}
+
+nav {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+}
+
+nav .container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    /* padding: 10px; */
-    /* background-color: var(--primary-color); */
-  }
+}
 
-  nav .Logo {
+nav .Logo {
     margin-left: 20px;
-  }
-  nav .user {
+}
+
+nav .Logo img {
+    width: 200px;
+    height: 100px;
+}
+
+nav .user {
     display: flex;
     padding: 20px;
     justify-content: space-between;
     gap: 40px;
     font-size: 24px;
-  }
+}
 
-
-
-.flex-it{
-   display: flex; 
-    align-items: center; 
+.flex-it {
+    display: flex;
+    align-items: center;
     flex-wrap: wrap;
     gap: 20px;
 }
 
-
-  .content-empty{
-    text-align: center;
-}
-  .content-empty p:first-of-type{
-    font-size: 40px;
-    color: var(--text-color);
-    margin-block: 20px;
-}
-  .content-empty p:last-of-type{
-    font-size: 32px;
-    color: var(--secondary-color);
-    margin-block: 20px;
-}
-
-
-
-
-.filter{
+.filter {
     margin-top: 104px;
     font-size: 32px;
     padding: 20px;
     border-radius: 5px;
 }
+
 .filter .container {
     display: flex;
     justify-content: space-between;
 }
-.filter .counter span{
+
+.filter .counter span {
     margin-inline: 5px;
 }
-.filter .counter button{
-   border: none;
-    
+
+.filter .counter button {
+    border: none;
 }
-.filter .counter button i{
+
+.filter .counter button i {
     font-size: 20px;
 }
-.hide{
+
+.hide {
     display: none;
 }
 
+.content-empty {
+    text-align: center;
+}
 
+.content-empty p:first-of-type {
+    font-size: 40px;
+    color: var(--text-color);
+    margin-block: 20px;
+}
 
+.content-empty p:last-of-type {
+    font-size: 32px;
+    color: var(--secondary-color);
+    margin-block: 20px;
+}
 
 .card {
     width: 300px;
     background: var(--background-color);
     border-radius: 15px;
     padding: 20px;
-
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-   
 }
 
 .card-header {
@@ -138,6 +131,11 @@
     font-size: 14px;
 }
 
+.actions {
+    background-color: transparent;
+    border: none;
+}
+
 .actions i {
     margin-left: 15px;
     color: #666;
@@ -145,16 +143,19 @@
     font-size: 14px;
 }
 
+.actions button.delete i {
+    color: #dc3545; 
 
-.actions i.delete {
-    color: #dc3545;
+}
+.actions button.delete {
+    background-color: none;
+    border: none;
 }
 
 .tags {
     display: flex;
     gap: 10px;
     margin-bottom: 15px;
-
 }
 
 .tag {
@@ -163,10 +164,7 @@
     font-size: 12px;
     background-color: #6c757d;
     color: white;
-
 }
-
-
 
 .language {
     color: var(--primary-color);
@@ -193,13 +191,39 @@
     transition: background-color 0.3s ease;
 }
 
-button.btn a{
+button.btn a {
     font-size: 20px;
-
     color: white;
-
 }
 
-button.btn:hover{
+button.btn:hover {
     background-color: var(--btn-hover);
+}
+
+.logout {
+    background-color: transparent;
+    border: none;
+}
+
+.logout i {
+    font-size: 20px;
+}
+
+@media screen and (max-width: 576px) {
+    :root {
+        font-size: 12px;
+    }
+
+    nav .Logo img {
+        width: 140px;
+        height: 70px;
+    }
+
+    .container {
+        width: 100%;
+    }
+
+    .user .fa-user-tie {
+        display: none;
+    }
 }

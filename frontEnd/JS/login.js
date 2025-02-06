@@ -1,3 +1,5 @@
+const API_URL = 'http://127.0.0.1:5000';
+
 const form = document.querySelector("form");
 const emailElement = document.getElementById("email");
 const passwordElement = document.getElementById("password");
@@ -60,7 +62,8 @@ async function  sendRecieveData(email, password)
         "email": email,
         "password": password
     };
-    const respone = await fetch('http://127.0.0.1:5000/login', {
+    const respone = await fetch(`${API_URL}/login`, {
+        credentials: "include",
         method: "POST",
         body: JSON.stringify(data),
         headers: {
@@ -77,6 +80,8 @@ async function  sendRecieveData(email, password)
         }else{
 
             window.location.href = "user.html";
+            localStorage.setItem("name", responeData.user.name.split(" ")[0]);
+
         }
 
     }

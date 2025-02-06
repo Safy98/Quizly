@@ -1,9 +1,35 @@
+const API_URL = 'http://127.0.0.1:5000';
+
 const addQuizBtn1 = document.querySelector(".add-quiz-btn1");
 const addQuizBtn2 = document.querySelector(".add-quiz-btn2");
 const contentEmpty = document.querySelector(".content-empty");
 const quizSpace = document.querySelector(".content .container");
 const quizCard = document.querySelector(".card");
+const logoutBtn = document.querySelector(".logout");
 
+
+
+async function logout() {
+  const respone = await fetch(`${API_URL}/logout`, {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+
+
+  });
+
+  const responeData = await respone.json();
+  console.log('logout',responeData);
+  
+  if (responeData.success === true) {
+    window.location.href = "login.html";
+  }
+
+}
+
+logoutBtn.addEventListener("click", logout);
 const addQuiz = function (id,topic, level, description, questions,date) {
  
   const newCard = `
@@ -12,7 +38,7 @@ const addQuiz = function (id,topic, level, description, questions,date) {
                     <div class="date">${date}</div>
                     <div class="actions">
                         <!-- <button class="edit"> <i class="fas fa-pen"></i></button> -->
-                        <button ><i class="fas fa-trash-alt delete"></i></button>
+                        <button class  = "delete" ><i class="fas fa-trash-alt "></i></button>
                        
                     </div>
                 </div>
@@ -52,7 +78,15 @@ const addQuiz = function (id,topic, level, description, questions,date) {
 
 async function getQuiz(id) {
   try {
-    const response = await fetch(`http://127.0.0.1:5000/getQuiz/${id}`);
+    const response = await fetch(`${API_URL}/getQuiz/${id}`,{
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+  
+  
+    });
     if (!response.ok) {
       throw new Error(`Failed to fetch quiz: ${response.statusText}`);
     }
@@ -68,7 +102,7 @@ async function getQuiz(id) {
 }
 // async function editQuiz(id) {
 
-//   const responseData = await fetch(`http://127.0.0.1:5000/editQuiz/${id}`, {
+//   const responseData = await fetch(`${API_URL}/editQuiz/${id}`, {
  
 //     method: "GET",
 //     headers: {
@@ -98,8 +132,9 @@ async function getQuiz(id) {
 
 async function deleteQuiz(id) { 
 
-    const responseData = await fetch(`http://127.0.0.1:5000/deleteQuiz/${id}`, {
+    const responseData = await fetch(`${API_URL}/deleteQuiz/${id}`, {
         method: "DELETE",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -115,7 +150,14 @@ async function deleteQuiz(id) {
 
 
 async function getQuizes() {
-  const responseData = await fetch("http://127.0.0.1:5000/getQuizes");
+  const responseData = await fetch(`${API_URL}/getQuizes`,
+  {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+});
   const data = await responseData.json();
   console.log(data);  
   
@@ -138,5 +180,54 @@ function displayQuizes({quizes}) {
     addQuiz(quiz.id,quiz.topic, quiz.level, quiz.description,quiz.NumberOfQuestions,quiz.created_at.split("T")[0]);
   });
 }
+
+
+// window.onload = function () {
+
+//   const respone = fetch(`${API_URL}/isAdminLoggedIn`, 
+//   {
+//     method: "GET",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//   });
+//   const responeData = respone.json();
+//   console.log(responeData);
+//   responeData.then((data) => 
+//   {
+    
+//   })
+//   .catch((error) => {
+//     console.log(error);
+//   });
+
+// }
+
+// window.addEventListener("load", function() {
+//   if (document.referrer === "") {
+//     const respone = fetch(`${API_URL}/isLoggedIn`, 
+//         {
+//           method: "GET",
+//           headers: {
+//             "Content-Type": "application/json",
+//           },
+//         });
+//         const responeData = respone.json();
+//         console.log(responeData);
+//         // responeData.then((data) => 
+//         // {
+          
+//         // })
+//         // .catch((error) => {
+//         //   console.log(error);
+//         // });
+
+
+
+//   } else {
+//       console.log("User was redirected from:", document.referrer);
+//   }
+// });
+
 
 getQuizes();

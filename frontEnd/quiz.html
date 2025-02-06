@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <link rel="stylesheet" href="CSS/quizcreator.css" />
     <link rel="stylesheet" href="CSS/quiz.css" />
 
     <link rel="stylesheet" href="CSS/all.min.css" />
@@ -21,15 +20,21 @@
           <a href=""> <img src="Images/Logo2.png" alt="Quizly Logo" /></a>
         </div>
         <div class="user">
-          <i class="fa-solid fa-user-tie" style="color: #0d9488"></i>
+          <i class="fa-solid fa-user" style="color: #0d9488"></i>
           <p class="user-name">User</p>
-          <i class="fa-solid fa-arrow-right-from-bracket" style="color: #720507"></i>
+         <button class="logout"> <i class="fa-solid fa-arrow-right-from-bracket" style="color: #720507"></i></button>
         </div>
       </div>
     </nav>
     <div class="content">
       <div class="container">
         <div class="quiz-space">
+          <div class="exit">
+            <i class="fa-solid fa-arrow-left-long"></i>
+            <button> Exit</button>
+            
+            <!-- <a href="user.html">Exit</a> -->
+          </div>
           <h2 class="quiz-topic"></h2>
           <div class="progress"></div>
           <div class="question-container">

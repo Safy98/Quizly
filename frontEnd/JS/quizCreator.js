@@ -1,4 +1,6 @@
 "use strict";
+const API_URL = 'http://127.0.0.1:5000';
+
 const AddQuestionBtnEle = document.querySelector(".add-btn");
 const saveBtnEle = document.querySelector(".save-btn");
 const questionTypeInputEle = document.querySelector("#question-type");
@@ -354,7 +356,7 @@ async function sendQuiz(quiz){
   if(editMode){
     console.log("hi",toUpdateQuiz.id);
    
-    response = await fetch(`http://127.0.0.1:5000/updateQuiz/${toUpdateQuiz.id}`, {
+    response = await fetch(`${API_URL}/updateQuiz/${toUpdateQuiz.id}`, {
       method: "PUT",
       body: JSON.stringify(quiz),
       headers: {
@@ -366,7 +368,7 @@ async function sendQuiz(quiz){
   }
   else
   {
-    response = await fetch('http://127.0.0.1:5000/addQuiz', {
+    response = await fetch(`${API_URL}/addQuiz`, {
       method: "POST",
       body: JSON.stringify(quiz),
       headers: {

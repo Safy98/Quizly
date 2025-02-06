@@ -1,9 +1,17 @@
+const API_URL = 'http://127.0.0.1:5000';
+
 const contentEmpty = document.querySelector(".content-empty");
 const quizSpace = document.querySelector(".content .container");
 const quizCard = document.querySelector(".card");
 const userName = document.querySelector(".user-name");
-userName.textContent = localStorage.getItem("name");
 const startBtn = document.querySelector(".start");
+const logoutBtn = document.querySelector(".logout");
+
+if (!localStorage.getItem("name")) {
+  window.location.href = "login.html";
+}
+userName.textContent = localStorage.getItem("name");
+
 const addQuiz = function (id, topic, level, description, questions, date) {
   const newCard = `
        <div class="card " id="${id}">
@@ -36,11 +44,15 @@ const addQuiz = function (id, topic, level, description, questions, date) {
 });
 };
 
+logoutBtn.addEventListener("click", function () {
+  localStorage.removeItem("name");
+  window.location.href = "login.html";
+})
 
 
 async function startQuiz(id) {
 
-    const respone = await fetch(`http://127.0.0.1:5000/getQuiz/${id}`, {
+    const respone = await fetch(`${API_URL}/getQuiz/${id}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -50,7 +62,6 @@ async function startQuiz(id) {
       if (responeData.success === true) {
         let {quiz} = responeData;
         console.log(quiz);
-        localStorage.setItem("userQuiz", JSON.stringify(quiz));
         localStorage.setItem("userQuiz", JSON.stringify(quiz));
         window.location.href = `quiz.html`;
       }
@@ -64,8 +75,17 @@ async function startQuiz(id) {
 }
 
 async function getQuizes() {
-  const responseData = await fetch("http://127.0.0.1:5000/getQuizes");
-  const data = await responseData.json();
+  const responseData = await fetch(`${API_URL}/getQuizes`,
+    {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+  }); 
+   const data = await responseData.json();
+
+console.log(data);
 
   displayQuizes(data);
 }

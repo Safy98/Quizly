@@ -1,3 +1,5 @@
+const API_URL = 'http://127.0.0.1:5000';
+
 const form = document.querySelector("form");
 const nameElement = document.getElementById("name");
 const emailElement = document.getElementById("email");
@@ -91,7 +93,7 @@ async function sendRecieveData(name, email, password) {
     email: email,
     password: password,
   };
-  const respone = await fetch("http://127.0.0.1:5000/register", {
+  const respone = await fetch(`${API_URL}/register`, {
     method: "POST",
     body: JSON.stringify(data),
     headers: {
@@ -102,8 +104,8 @@ async function sendRecieveData(name, email, password) {
   const responeData = await respone.json();
 
   if (responeData.success === true) {
-    window.location.href = "user.html";
     localStorage.setItem("name", responeData.user.name.split(" ")[0]);
+    window.location.href = "user.html";
   } else {
     showError(emailElement, responeData.message);
     emailElement.focus();

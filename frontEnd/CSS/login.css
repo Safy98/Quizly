@@ -21,29 +21,36 @@ body {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  align-items: center;
-  width: 100%;
+  align-items: center; 
+  /* width: 100%; */
   height: 100vh;
 }
 
+.user-logo {
+ 
+  width: 50%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+ 
+}
+
 .user-logo img {
-  width: 40%;
-  position: absolute;
-  left: 5%;
-  top: 25%;
+  width: 80%;
+ object-fit: contain;
 }
 
 .form-box {
   border-top-left-radius: 88px;
   border-bottom-left-radius: 88px;
-  position: absolute;
   width: 50%;
   height: 100%;
   background-color: var(--background-color);
-  right: 0;
+  /* right: 0; */
   display: flex;
   justify-content: center;
   text-align: center;
+  transition: all 0.5s ease-in-out;
 }
 
 .form-box img {
@@ -51,7 +58,7 @@ body {
 }
 
 .logo img {
-  width: 300px;
+  width: 100%;
 }
 
 .welcome {
@@ -147,3 +154,25 @@ form {
     font-size: 12px;
     margin-top: 5px;
 }
+
+@media screen and (max-width: 768px) {
+  .user-logo {
+    display: none;
+  }
+  .form-box {
+    width: 100%;
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+
+  }
+   
+  
+}
+
+
+/* Extra small	None	<576px
+Small	sm	≥576px
+Medium	md	≥768px
+Large	lg	≥992px
+Extra large	xl	≥1200px
+Extra extra large	xxl	≥1400px */
