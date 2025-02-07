@@ -168,8 +168,8 @@ async function getQuizes() {
 }
 
 
-function displayQuizes({quizes}) {
-    if (quizes.length === 0) {
+function displayQuizes({quizzes}) {
+    if (quizzes.length === 0) {
       contentEmpty.classList.remove("hide");
       addQuizBtn2.classList.add("hide");
       quizSpace.classList.remove("flex-it");
@@ -179,7 +179,7 @@ function displayQuizes({quizes}) {
       addQuizBtn2.classList.remove("hide");
       quizSpace.classList.add("flex-it");
     }
-  quizes.forEach((quiz) => {
+  quizzes.forEach((quiz) => {
     addQuiz(quiz.id,quiz.topic, quiz.level, quiz.description,quiz.NumberOfQuestions,quiz.created_at.split("T")[0]);
   });
 }

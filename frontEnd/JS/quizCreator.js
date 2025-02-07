@@ -9,6 +9,33 @@ const questionContainer = document.querySelector("#questions-container");
 const quizTopicInputEle = document.querySelector("#topic");
 const quizLevelSelectEle = document.querySelector("#level");
 const quizDescriptionTextAreaEle = document.querySelector("#description");
+const logoutBtn = document.querySelector(".logout");
+
+
+async function logout() {
+  const respone = await fetch(`${API_URL}/logout`, {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+    },
+
+
+  });
+
+  const responeData = await respone.json();
+  console.log('logout',responeData);
+  
+  if (responeData.success === true) {
+    window.location.href = "login.html";
+  }
+
+}
+
+logoutBtn.addEventListener("click", logout);
+
+
+
 let addAnswerEle;
 let questionID = 1;
 let questionCounter = 0;
@@ -354,6 +381,7 @@ async function sendQuiz(quiz){
    
     response = await fetch(`${API_URL}/updateQuiz/${toUpdateQuiz.id}`, {
       method: "PUT",
+      credentials: "include",
       body: JSON.stringify(quiz),
       headers: {
           "Content-Type": "application/json"
@@ -366,6 +394,7 @@ async function sendQuiz(quiz){
   {
     response = await fetch(`${API_URL}/addQuiz`, {
       method: "POST",
+      credentials: "include",
       body: JSON.stringify(quiz),
       headers: {
           "Content-Type": "application/json"
