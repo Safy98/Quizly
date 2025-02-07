@@ -113,6 +113,14 @@ submitBtn.addEventListener("click", function () {
   let isQuestionCorrect = true;
   const AllchoicesInput = Array.from(questionArea.querySelectorAll(`input[type="${type}"]`));
   const choosedInput = Array.from(questionArea.querySelectorAll(`input[type="${type}"]:checked`));
+  
+  if (choosedInput.length === 0) {
+    showError(questionArea, "Please select an answer");
+    return;
+  }
+  else{
+    clearError(questionArea);
+  }
 
   const AllchoicesIDs = AllchoicesInput.map(function (choice) {
     return choice.getAttribute("id");
@@ -131,13 +139,15 @@ submitBtn.addEventListener("click", function () {
   console.log(AllchoicesLabels);
   console.log(correctAnswers);
   
-  
-  AllchoicesLabels.forEach(function (choice) {
+  for (let i = 0; i < AllchoicesLabels.length; i++) {
+    let choice = AllchoicesLabels[i];
+    console.log(choice.textContent);
+    
     if (correctAnswers.includes(choice.textContent)) {
       choice.style.backgroundColor = "#198754";
-      // if (choosedLables.includes(choice.textContent)) {
-        
-      //   }
+      if(type ==="radio"){
+        break;
+      }
     } else if (
       !correctAnswers.includes(choice.textContent) &&
       choosedLables.includes(choice.textContent)
@@ -145,7 +155,22 @@ submitBtn.addEventListener("click", function () {
       choice.style.backgroundColor = "#DC3545";
       isQuestionCorrect = false;
     }
-  });
+  }
+  
+  
+  // AllchoicesLabels.forEach(function (choice) {
+  //   console.log(choice.textContent);
+  //   if (correctAnswers.includes(choice.textContent)) {
+  //     choice.style.backgroundColor = "#198754";
+    
+  //   } else if (
+  //     !correctAnswers.includes(choice.textContent) &&
+  //     choosedLables.includes(choice.textContent)
+  //   ) {
+  //     choice.style.backgroundColor = "#DC3545";
+  //     isQuestionCorrect = false;
+  //   }
+  // });
   if (isQuestionCorrect) {
     score++;
   }
@@ -156,6 +181,26 @@ submitBtn.addEventListener("click", function () {
 });
 
 console.log(userQuiz);
+
+function showError(inputElement, message) {
+  // Check if an error message already exists
+  let errorElement = inputElement.parentElement.querySelector(".error-message");
+  if (!errorElement) {
+    // Create a new error message element
+    errorElement = document.createElement("div");
+    errorElement.className = "error-message";
+    errorElement.textContent = message;
+    // Insert the error message just above the input
+    inputElement.parentElement.insertBefore(errorElement, inputElement);
+  } else {
+    // Update the existing error message
+    errorElement.textContent = message;
+  }
+
+  // Add a class to highlight the invalid input (optional)
+  inputElement.classList.add("invalid-input");
+}
+
 
 function showQuestion(QuestionNumber) {
   const question = userQuiz.questions[QuestionNumber];
@@ -206,4 +251,16 @@ function showQuestion(QuestionNumber) {
 
   nextBtn.disabled = true;
   submitBtn.disabled = false;
+}
+
+
+
+function clearError(inputElement) {
+  const errorElement = inputElement.parentElement.querySelector(".error-message");
+  if (errorElement) {
+    errorElement.remove(); // Remove the error message
+  }
+
+  // Remove the invalid input class (optional)
+  inputElement.classList.remove("invalid-input");
 }

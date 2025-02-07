@@ -55,11 +55,15 @@ nav .Logo img {
 nav .user {
     display: flex;
     padding: 20px;
+    align-items: center;
     justify-content: space-between;
     gap: 40px;
     font-size: 24px;
 }
-
+.counter span{
+   min-width: 9.75rem;
+   text-align: center;
+}
 .flex-it {
     display: flex;
     align-items: center;
@@ -76,7 +80,8 @@ nav .user {
 
 .filter .container {
     display: flex;
-    justify-content: space-between;
+    /* justify-content: s; */
+    align-items: center;
 }
 
 .filter .counter span {
@@ -85,12 +90,47 @@ nav .user {
 
 .filter .counter button {
     border: none;
+    background-color: transparent;
 }
+.quiz-topic.tag{
+    background-color: transparent;
+    border: 2px solid var(--primary-color);
 
+    
+}
+.quiz-topic.tag:hover{
+    background-color: var(--btn-hover);
+    border-color: transparent;
+ 
+}
+.quiz-topic.tag:hover button{
+    color: white;
+}
+.quiz-topic.tag button{
+
+    background-color: transparent;
+    border: none;
+    color: var(--primary-color);
+}
+.counter{
+    display: flex;
+    align-items: start;
+    gap: 5px;
+}
+.filter-btn{
+    margin-top: 5px;
+}
 .filter .counter button i {
     font-size: 20px;
 }
+.fa-chevron-down{
+    padding-bottom: 10px;
 
+}
+.filterTopics{
+    display: flex;
+    gap: 20px;
+}
 .hide {
     display: none;
 }
@@ -154,6 +194,7 @@ nav .user {
 
 .tags {
     display: flex;
+    align-items: center;
     gap: 10px;
     margin-bottom: 15px;
 }
@@ -165,19 +206,36 @@ nav .user {
     background-color: #6c757d;
     color: white;
 }
+.solved{
+    margin-left: 50px;
+    color: green;
+    font-size: 30px;
 
+}
+.score{
+
+    margin-left: 50px;
+}
+.not-solved{
+    margin-left: 50px;
+    color: red;
+    font-size: 30px;
+
+}
 .language {
     color: var(--primary-color);
     font-size: 20px;
     margin-bottom: 8px;
 }
 
-.description {
+p.description {
     color: #666;
     height: 50px;
     font-size: 14px;
-    margin-bottom: 15px;
+    margin-bottom: 30px;
     line-height: 1.4;
+    /* width: 100%; */
+    word-wrap: break-word;
 }
 
 .btn {
@@ -227,3 +285,8 @@ button.btn:hover {
         display: none;
     }
 }
+
+.rotate {
+    transform: rotate(-90deg);
+    transition: transform 0.3s ease-in-out;
+  }

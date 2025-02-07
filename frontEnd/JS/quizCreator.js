@@ -10,7 +10,7 @@ const quizTopicInputEle = document.querySelector("#topic");
 const quizLevelSelectEle = document.querySelector("#level");
 const quizDescriptionTextAreaEle = document.querySelector("#description");
 let addAnswerEle;
-
+let questionID = 1;
 let questionCounter = 0;
 let editMode = false;
 let toUpdateQuiz;
@@ -27,7 +27,7 @@ let toUpdateQuiz;
       let Question = questionContainer.appendChild(createNewQuestion(index,question.questionText ));
       Question.setAttribute("data-type",question.questionType);
       question.answers.forEach((answer) => {
-        Question.appendChild(createNewAnswer(question.questionType,answer.answerText , answer.isCorrect ? "checked" : ""));
+        Question.appendChild(createNewAnswer(question.questionType,Question,answer.answerText , answer.isCorrect ? "checked" : ""));
       });
       Question.appendChild(appendAddAnswerEle());
     });
@@ -58,15 +58,7 @@ AddQuestionBtnEle.addEventListener("click", function () {
     return;
   }
 
-  let question = `
- <div class="question form-group">
-    <div class="questionAndIcon">
-    <label for="">Question <span>${questionCounter + 1}</span></label>
-    <button><i class="fas fa-trash-alt delete"></i></button>
-    </div>
-    <input  type="text" placeholder="Enter your question" />
-  </div>
-`;
+
 
   const LastQuestion = questionContainer.appendChild(createNewQuestion(questionCounter));
 
@@ -83,8 +75,8 @@ AddQuestionBtnEle.addEventListener("click", function () {
   }
 
   LastQuestion.setAttribute("data-type", type);
-  LastQuestion.appendChild(createNewAnswer(type));
-  LastQuestion.appendChild(createNewAnswer(type));
+  LastQuestion.appendChild(createNewAnswer(type,LastQuestion));
+  LastQuestion.appendChild(createNewAnswer(type,LastQuestion));
   LastQuestion.appendChild(appendAddAnswerEle());
 
   questionCounter++;
@@ -105,9 +97,9 @@ questionContainer.addEventListener("click", function (event) {
 
     let newChoiceEle;
     if (previousQuestionType == "checkbox") {
-      newChoiceEle = createNewAnswer("checkbox");
+      newChoiceEle = createNewAnswer("checkbox",parent);
     } else {
-      newChoiceEle = createNewAnswer("radio");
+      newChoiceEle = createNewAnswer("radio",parent);
     }
 
     parent.insertBefore(newChoiceEle, currentEle);
@@ -120,9 +112,10 @@ function createNewQuestion( index ,questionInput = '') {
   const newQuestionEle = document.createElement("div");
   newQuestionEle.classList.add("question");
   newQuestionEle.classList.add("form-group");
+  newQuestionEle.id = `question-${index}`;
   newQuestionEle.innerHTML = `
   <div class="questionAndIcon">
-    <label for="">Question <span>${index + 1}</span></label>
+    <label for="">Question <span >${index + 1}</span></label>
     <button><i class="fas fa-trash-alt delete"></i></button>
   </div>
   <input  type="text" placeholder="Enter your question" maxlength="100" />
@@ -137,21 +130,24 @@ function createNewQuestion( index ,questionInput = '') {
     .addEventListener("click", function () {
       newQuestionEle.remove();
       questionCounter--;
-      let allQ = document.querySelector("#questions-container").querySelectorAll(".question ");
+      let allQ = document.querySelector("#questions-container").querySelectorAll(".question ");                             
 
       allQ.forEach(function (element, index) {
         element.querySelector("span").textContent = index + 1;
       });
     });
+    questionID++;
   return newQuestionEle;
 }
-function createNewAnswer(type,answerInput = '',isChecked = '') {
+function createNewAnswer(type,parent,answerInput = '',isChecked = '') {
+  console.log("parent",parent);
+  console.log("parent",parent.id);
   const newChoiceEle = document.createElement("div");
   newChoiceEle.classList.add("answer-option");
   newChoiceEle.classList.add("form-group");
   newChoiceEle.innerHTML = `
   <div class="choice-wrapper">
-      <input type=${type} name="answer" id="answer1" ${isChecked} />
+      <input type=${type} name="${parent.id}" id="answer1" ${isChecked} />  
       <input type="text" class="answer-input" placeholder="Type your answer here" maxlength="100" />
       <button class="delete-btn">
       <i class="fas fa-trash-alt"></i>
@@ -435,7 +431,7 @@ function showError(inputElement, message) {
   inputElement.classList.add("invalid-input");
 }
 
-// }
+
 
 function clearError(inputElement) {
   const errorElement = inputElement.parentElement.querySelector(".error-message");

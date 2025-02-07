@@ -6,8 +6,11 @@ const contentEmpty = document.querySelector(".content-empty");
 const quizSpace = document.querySelector(".content .container");
 const quizCard = document.querySelector(".card");
 const logoutBtn = document.querySelector(".logout");
+const filterBtn =  document.querySelector(".filter-btn")
 
-
+filterBtn.addEventListener("click", function () {
+  filterBtn.classList.toggle("rotate");
+})
 
 async function logout() {
   const respone = await fetch(`${API_URL}/logout`, {
@@ -181,53 +184,6 @@ function displayQuizes({quizes}) {
   });
 }
 
-
-// window.onload = function () {
-
-//   const respone = fetch(`${API_URL}/isAdminLoggedIn`, 
-//   {
-//     method: "GET",
-//     headers: {
-//       "Content-Type": "application/json",
-//     },
-//   });
-//   const responeData = respone.json();
-//   console.log(responeData);
-//   responeData.then((data) => 
-//   {
-    
-//   })
-//   .catch((error) => {
-//     console.log(error);
-//   });
-
-// }
-
-// window.addEventListener("load", function() {
-//   if (document.referrer === "") {
-//     const respone = fetch(`${API_URL}/isLoggedIn`, 
-//         {
-//           method: "GET",
-//           headers: {
-//             "Content-Type": "application/json",
-//           },
-//         });
-//         const responeData = respone.json();
-//         console.log(responeData);
-//         // responeData.then((data) => 
-//         // {
-          
-//         // })
-//         // .catch((error) => {
-//         //   console.log(error);
-//         // });
-
-
-
-//   } else {
-//       console.log("User was redirected from:", document.referrer);
-//   }
-// });
 
 
 getQuizes();
