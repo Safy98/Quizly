@@ -3,91 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta name="description" content="Quizly Admin Dashboard - Manage Your Quizzes">
+    <title>Quizly - Admin Dashboard</title>
 
-    <script>
-        console.log(document.referrer);
-        
-    if (document.referrer === "") {
-        fetch(`http://127.0.0.1:5000/isLoggedIn`, {
-        credentials: "include",
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json"
-        }
-    })
-    .then((response) => response.json()).then((data) => {
-          console.log(data);
-          if (data.success === true) {
-              
-              const user = data.user;
-              console.log(user);
-            console.log(user.isAdmin);
-            if (user.isAdmin !== true) {
-                console.log('not admin');
-                window.location.href = "login.html";
-                
-            }
-        }
-        else {
-              window.location.href = "login.html";
-          }
-        });
-
-  } else {
-      console.log("User was redirected from:", document.referrer);
-  }
-
-
-    </script>
+    <!-- Preload critical assets -->
+    <link rel="preload" href="CSS/admin.css" as="style">
+    <link rel="preload" href="Images/Logo2.png" as="image">
+    
+    <!-- Styles -->
     <link rel="stylesheet" href="CSS/admin.css">
     <link rel="stylesheet" href="CSS/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Auth Check Script - Execute immediately -->
+    <script>
+        // Immediate auth check
+        (function() {
+            const isAdmin = localStorage.getItem("admin");
+            if (!isAdmin) {
+                window.location.href = "login.html";
+            }
+        })();
+    </script>
 </head>
 <body>
+    <!-- Toast notification container -->
+    <div id="toast" class="toast" role="alert" aria-live="polite"></div>
+   
     <nav>
-       <div class="container">
-        <div class="Logo">
-            <!-- ^ decide where the link should point  -->
-           <a href=""> <img src="Images/Logo2.png" alt="Quizly Logo"></a>
-           </div>
-           <div class="user">
-            <i class="fa-solid fa-user-tie" style="color: #0d9488;"></i>
-            <a href="admin.html">Admin</a>
-            <button class="logout"><i class="fa-solid fa-arrow-right-from-bracket" style="color: #720507;"></i></button>  
-       </div>     
-    </div>
+        <div class="container">
+            <div class="Logo">
+                <a href="admin.html"> 
+                    <img src="Images/Logo2.png" alt="Quizly Logo">
+                </a>
+            </div>
+            <div class="user">
+                <i class="fa-solid fa-user-tie" style="color: #0d9488;"></i>
+                <a href="admin.html">Admin</a>
+                <button class="logout" aria-label="Logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket" style="color: #720507;"></i>
+                </button>  
+            </div>     
+        </div>
     </nav>
+
     <div class="filter">
-       <div class="container">
-        <div class="counter">
-            <span>All Quizzes <span>0</span></span>
-            <button class="filter-btn"><i class="fa-solid fa-chevron-down"></i></button>
+        <div class="container">
+            <div class="counter">
+                <span>All Quizzes</span>
+                <button class="filter-btn" aria-label="Filter quizzes">
+                    <i class="fa-solid fa-chevron-down"></i>
+                </button>
+            </div>
+        <div class="filterTopics hide" role="menu"></div>
+
+            
         </div>
         <div class="quiz-btn">
-            <button class="btn add-quiz-btn2 hide"><a href="quizCreator.html">+ Add new quiz</a></button>
+            <button class="btn add-quiz-btn2 ">
+                <a href="quizCreator.html">+ Add new quiz</a>
+            </button>
         </div>
-       </div>
     </div>
 
-    <div class="content">
+    <main class="content">
         <div class="container">
-           
-            <div class="content-empty">
+            <div class="content-empty hide">
                 <div class="quiz-img">
-                    <img src="Images/add_quiz.png" alt="add quiz image">
+                    <img src="Images/add_quiz.png" alt="Add quiz illustration" loading="lazy">
                 </div>
                 <p>You don't have any quizzes yet!</p>
                 <p>Start by Creating your first quiz</p>
-                <button class="btn add-quiz-btn1" ><a href="quizCreator.html">+ Add new quiz</a></button>
+                <button class="btn add-quiz-btn1">
+                    <a href="quizCreator.html">+ Add new quiz</a>
+                </button>
             </div>
         </div>
-    </div>
+    </main>
 
-
-
-
-
-    <script src="JS/admin.js"></script>
+    <script src="JS/admin.js" type="module" defer></script>
 </body>
 </html>

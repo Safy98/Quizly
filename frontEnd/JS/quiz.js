@@ -78,7 +78,7 @@ finishBtn.addEventListener("click", function () {
       body: JSON.stringify({
         // name: localStorage.getItem("name"),
         score: score,
-        quizID: userQuiz.id
+        quizId: userQuiz.id
       }),
     }).then((respone) => respone.json()).then((data) => {
       console.log(data);

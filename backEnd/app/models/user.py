@@ -1,5 +1,6 @@
 from ..extensions import db
 from werkzeug.security import generate_password_hash, check_password_hash
+from .quiz import Quiz
 
 user_quiz = db.Table('user_quiz',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
@@ -29,6 +30,7 @@ class User(db.Model):
             'email': self.email,
             'isAdmin': self.isAdmin,
             'solved_quizzes': [{'id': quiz.id, 'score': score} 
-                               for quiz, score in db.session.query('Quiz', user_quiz.c.score)
-                               .filter(user_quiz.c.user_id == self.id, user_quiz.c.quiz_id == 'Quiz'.id).all()]
+                               for quiz, score in db.session.query(Quiz, user_quiz.c.score)
+                               .filter(user_quiz.c.user_id == self.id, 
+                                     user_quiz.c.quiz_id == Quiz.id).all()]
         }

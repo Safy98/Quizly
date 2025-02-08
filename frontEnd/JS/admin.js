@@ -1,189 +1,126 @@
-const API_URL = 'http://127.0.0.1:5000';
+import { CONFIG, makeRequest } from './utils/auth.js';
+import { createCard, handleFilter, handleLogout } from './utils/shared.js';
 
-const addQuizBtn1 = document.querySelector(".add-quiz-btn1");
-const addQuizBtn2 = document.querySelector(".add-quiz-btn2");
-const contentEmpty = document.querySelector(".content-empty");
-const quizSpace = document.querySelector(".content .container");
-const quizCard = document.querySelector(".card");
-const logoutBtn = document.querySelector(".logout");
-const filterBtn =  document.querySelector(".filter-btn")
-
-filterBtn.addEventListener("click", function () {
-  filterBtn.classList.toggle("rotate");
-})
-
-async function logout() {
-  const respone = await fetch(`${API_URL}/logout`, {
-    method: "GET",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
-
-
-  });
-
-  const responeData = await respone.json();
-  console.log('logout',responeData);
-  
-  if (responeData.success === true) {
-    window.location.href = "login.html";
-  }
-
-}
-
-logoutBtn.addEventListener("click", logout);
-const addQuiz = function (id,topic, level, description, questions,date) {
- 
-  const newCard = `
-     <div class="card " id="${id}">
-                <div class="card-header">
-                    <div class="date">${date}</div>
-                    <div class="actions">
-                        <!-- <button class="edit"> <i class="fas fa-pen"></i></button> -->
-                        <button class  = "delete" ><i class="fas fa-trash-alt "></i></button>
-                       
-                    </div>
-                </div>
-                <div class="tags">
-                    <span class="tag advance">${level}</span>
-                    <span class="tag questions">${questions} questions</span>
-                </div>
-                <div class="card-content">
-                    <h2 class="language">${topic}</h2>
-                    <p class="description">${description}</p>
-                      <button class="btn edit">Edit</button>
-  
-
-                </div>
-            </div>
-
-    `;
-
-    console.log(id);
-    
-    quizSpace.insertAdjacentHTML("beforeend", newCard);
-
-    const newCardEle =document.getElementById(id);
-    const deleteBtn =newCardEle.querySelector(".delete");
-    const editBtn =newCardEle.querySelector(".edit");
-    deleteBtn.addEventListener("click", function () {
-    
-     deleteQuiz(id);
-     
-    });
-
-    editBtn.addEventListener("click", function () {
-      // window.location.href = `editQuiz.html?id=${id}`;
-      getQuiz(id);
-    });
+// DOM Elements
+const elements = {
+    addQuizBtn1: document.querySelector(".add-quiz-btn1"),
+    addQuizBtn2: document.querySelector(".add-quiz-btn2"),
+    contentEmpty: document.querySelector(".content-empty"),
+    quizSpace: document.querySelector(".content .container"),
+    logoutBtn: document.querySelector(".logout"),
+    filterBtn: document.querySelector(".filter-btn"),
+    filterArea: document.querySelector(".filterTopics"),
+    filterTitle: document.querySelector(".counter span"),
+    toast: document.getElementById("toast"),
 };
 
-async function getQuiz(id) {
-  try {
-    const response = await fetch(`${API_URL}/getQuiz/${id}`,{
-      method: "GET",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-  
-  
-    });
-    if (!response.ok) {
-      throw new Error(`Failed to fetch quiz: ${response.statusText}`);
+// Constants
+const SELECTORS = {
+    DELETE_BTN: ".delete",
+    EDIT_BTN: ".edit",
+};
+
+// Event Handlers
+const handleDelete = async (id) => {
+    try {
+        const response = await makeRequest(`/deleteQuiz/${id}`, 'DELETE');
+        if (response.success) {
+            window.location.reload();
+        }
+    } catch (error) {
+        console.error('Delete failed:', error);
     }
-    const data = await response.json();
-    localStorage.setItem("quiz", JSON.stringify(data));
-    window.location.href = `quizCreator.html`;
-    console.log(data);
-  } catch (error) {
-    console.log(error);
-  }
- 
-  
-}
-// async function editQuiz(id) {
+};
 
-//   const responseData = await fetch(`${API_URL}/editQuiz/${id}`, {
- 
-//     method: "GET",
-//     headers: {
-//       "Content-Type": "application/json",
-//     },
-//   });
-//   const data = await responseData.json();
-//   console.log(data);
-  // window.location.href = `editQuiz.html?id=${id}&topic=${data.topic}&level=${data.level}&description=${data.description}`;
+const handleEdit = async (id) => {
+    try {
+        const response = await makeRequest(`/getQuiz/${id}`, 'GET');
+        localStorage.setItem("quiz", JSON.stringify(response));
+        window.location.href = "quizCreator.html";
+    } catch (error) {
+        console.error('Edit failed:', error);
+    }
+};
 
-  // data.questions.forEach((question) => {
-  //   const newQuestion = `
-  //   <div class="question">
-  //   <div class="questionAndIcon">
-  //   <label for="">Question <span>${question.id}</span></label>
-  //   <button><i class="fas fa-trash-alt delete"></i></button>
-  //   </div>
-  //   <input  type="text" placeholder="Enter your question" value="${question.question}"/>
-  // </div>
-  //   `;
-  //   questionContainer.insertAdjacentHTML("beforeend", newQuestion);
-  // });
+const addQuizCard = (quizData) => {
+    const { id, topic, level, description, NumberOfQuestions, created_at } = quizData;
+    elements.quizSpace.insertAdjacentHTML(
+        "beforeend", 
+        createCard({ id, topic, level, description, NumberOfQuestions, created_at }, true)
+    );
 
+    const newCard = document.getElementById(id);
+    if (!newCard) return;
 
+    const deleteBtn = newCard.querySelector(SELECTORS.DELETE_BTN);
+    const editBtn = newCard.querySelector(SELECTORS.EDIT_BTN);
 
-// }
+    deleteBtn?.addEventListener("click", () => handleDelete(id));
+    editBtn?.addEventListener("click", () => handleEdit(id));
+};
 
-async function deleteQuiz(id) { 
+const displayQuizes = ({ quizzes }, filter = 'all') => {
+    elements.quizSpace.innerHTML = "";
+    const hasQuizzes = quizzes.length > 0;
+    elements.contentEmpty.classList.toggle("hide", hasQuizzes);
+    elements.addQuizBtn2.classList.toggle("hide", !hasQuizzes);
+    elements.quizSpace.classList.toggle("flex-it", hasQuizzes);
 
-    const responseData = await fetch(`${API_URL}/deleteQuiz/${id}`, {
-        method: "DELETE",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await responseData.json();
-       
-      if (data.success === true) {
-        window.location.reload();
+    quizzes.forEach(quiz => {
+      if (filter === "all" || filter === quiz.topic.toLowerCase()) {
+          addQuizCard(quiz);
       }
-
-  }
-
-
-
-async function getQuizes() {
-  const responseData = await fetch(`${API_URL}/getQuizes`,
-  {
-    method: "GET",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
-});
-  const data = await responseData.json();
-  console.log(data);  
-  
-  displayQuizes(data);
-}
-
-
-function displayQuizes({quizzes}) {
-    if (quizzes.length === 0) {
-      contentEmpty.classList.remove("hide");
-      addQuizBtn2.classList.add("hide");
-      quizSpace.classList.remove("flex-it");
-    }
-    else{
-      contentEmpty.classList.add("hide");
-      addQuizBtn2.classList.remove("hide");
-      quizSpace.classList.add("flex-it");
-    }
-  quizzes.forEach((quiz) => {
-    addQuiz(quiz.id,quiz.topic, quiz.level, quiz.description,quiz.NumberOfQuestions,quiz.created_at.split("T")[0]);
   });
-}
+};
 
 
+const createTopicFilter = (topics) => {
+  topics.forEach(topic => {
+      const topicElement = document.createElement("div");
+      topicElement.classList.add("quiz-topic", "tag");
+      topicElement.innerHTML = `<button>${topic}</button>`;
+      
+      topicElement.addEventListener("click", () => {
+          displayQuizes(window.quizzesData, topic.toLowerCase());
+          elements.filterTitle.textContent = topic === 'All' ? 'All Quizzes' : topic;
+          
+      });
 
-getQuizes();
+      elements.filterArea.appendChild(topicElement);
+  });
+};
+
+// Initialize
+const init = async () => {
+    try {
+        // Add event listeners
+        elements.filterBtn.addEventListener("click", () => handleFilter(elements.filterBtn, elements.filterArea));
+        elements.logoutBtn.addEventListener("click", () => handleLogout(makeRequest, true));
+
+        // Fetch and display quizzes
+        const data = await makeRequest('/getQuizes', 'GET');
+        window.quizzesData = data; // Store for filter usage
+
+        console.log(data);
+        
+         // Create topic filters
+         const topics = ['All', ...new Set(
+          data.quizzes.map(quiz => 
+              quiz.topic.toLowerCase()
+                  .trim()
+                  .replace(/^\w/, c => c.toUpperCase())
+          )
+      )];
+
+      createTopicFilter(topics );
+
+      displayQuizes(data);
+
+
+    } catch (error) {
+        console.error('Initialization failed:', error);
+    }
+};
+
+// Start the application
+document.addEventListener('DOMContentLoaded', init);

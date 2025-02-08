@@ -21,7 +21,7 @@ a {
 
 body {
     background-color: var(--background-color);
-    font-family: "Lato", serif;
+    font-family: "Lato", sans-serif;
 }
 
 .container {
@@ -58,10 +58,10 @@ nav .user {
     align-items: center;
     justify-content: space-between;
     gap: 40px;
-    font-size: 24px;
+    font-size: 1.5rem;
 }
 .counter span{
-   min-width: 9.75rem;
+   min-width: 5.75rem;
    text-align: center;
 }
 .flex-it {
@@ -73,13 +73,17 @@ nav .user {
 
 .filter {
     margin-top: 104px;
-    font-size: 32px;
-    padding: 20px;
+    font-size: 2rem;
+    padding-block: 20px;
     border-radius: 5px;
+    display: flex;
+    width: 85%;
+    margin-inline: auto;
 }
 
 .filter .container {
     display: flex;
+    position: relative;
     /* justify-content: s; */
     align-items: center;
 }
@@ -121,7 +125,7 @@ nav .user {
     margin-top: 5px;
 }
 .filter .counter button i {
-    font-size: 20px;
+    font-size: 1.25rem;
 }
 .fa-chevron-down{
     padding-bottom: 10px;
@@ -130,6 +134,7 @@ nav .user {
 .filterTopics{
     display: flex;
     gap: 20px;
+    overflow: scroll;
 }
 .hide {
     display: none;
@@ -140,13 +145,13 @@ nav .user {
 }
 
 .content-empty p:first-of-type {
-    font-size: 40px;
+    font-size: 2.5rem;
     color: var(--text-color);
     margin-block: 20px;
 }
 
 .content-empty p:last-of-type {
-    font-size: 32px;
+    font-size: 2rem;
     color: var(--secondary-color);
     margin-block: 20px;
 }
@@ -168,7 +173,7 @@ nav .user {
 
 .date {
     color: #666;
-    font-size: 14px;
+    font-size: .875rem;
 }
 
 .actions {
@@ -180,7 +185,7 @@ nav .user {
     margin-left: 15px;
     color: #666;
     cursor: pointer;
-    font-size: 14px;
+    font-size: .875rem;
 }
 
 .actions button.delete i {
@@ -202,14 +207,14 @@ nav .user {
 .tag {
     padding: 5px 12px;
     border-radius: 20px;
-    font-size: 12px;
+    font-size: .75rem;
     background-color: #6c757d;
     color: white;
 }
 .solved{
     margin-left: 50px;
     color: green;
-    font-size: 30px;
+    font-size: 1.875rem;
 
 }
 .score{
@@ -219,19 +224,19 @@ nav .user {
 .not-solved{
     margin-left: 50px;
     color: red;
-    font-size: 30px;
+    font-size: 1.875rem;
 
 }
 .language {
     color: var(--primary-color);
-    font-size: 20px;
+    font-size: 1.25rem;
     margin-bottom: 8px;
 }
 
 p.description {
     color: #666;
     height: 50px;
-    font-size: 14px;
+    font-size: .875rem;
     margin-bottom: 30px;
     line-height: 1.4;
     /* width: 100%; */
@@ -241,7 +246,7 @@ p.description {
 .btn {
     background-color: var(--primary-color);
     color: white;
-    font-size: 16px;
+    font-size: 1rem;
     border: none;
     padding: 8px 25px;
     border-radius: 5px;
@@ -250,7 +255,7 @@ p.description {
 }
 
 button.btn a {
-    font-size: 20px;
+    font-size: 1.25rem;
     color: white;
 }
 
@@ -264,12 +269,24 @@ button.btn:hover {
 }
 
 .logout i {
-    font-size: 20px;
+    font-size: 1.25rem;
 }
 
+@media screen and (max-width: 1105px) {
+
+    .content .container{
+        margin: auto;
+        justify-content: center;
+    }
+    :root{
+        font-size: 14px;
+    }
+
+
+}
 @media screen and (max-width: 576px) {
     :root {
-        font-size: 12px;
+        font-size: 14px;
     }
 
     nav .Logo img {
@@ -284,8 +301,26 @@ button.btn:hover {
     .user .fa-user-tie {
         display: none;
     }
-}
+    .filter{
+        flex-direction: column;
+        align-items: center;
+    }
+    .add-quiz-btn2{
+        /* position: absolute; */
+        padding: 10px;
+        margin-top: 20px;
+    }
 
+    .content{
+        margin-bottom: 30px;
+    }
+
+   
+}
+.add-quiz-btn2{
+    /* position: absolute; */
+    padding: 10px;
+}
 .rotate {
     transform: rotate(-90deg);
     transition: transform 0.3s ease-in-out;

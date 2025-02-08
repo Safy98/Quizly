@@ -21,7 +21,6 @@ def create_app():
     # "expose_headers": ["Content-Range", "X-Content-Range"],
     # "supports_credentials": True}})
     
-    app.config['CORS_HEADERS'] = 'Content-Type'
     # Register blueprints
     from .routes.auth import auth
     from .routes.quiz import quiz
@@ -35,7 +34,7 @@ def create_app():
         isAdminExists = User.query.filter_by(email='safee.srio@gmail.com').first()
         if isAdminExists is None:
             admin = User(email='safee.srio@gmail.com', isAdmin=True, name='Safee')
-            admin.set_password('safee51')
+            admin.set_password('safee51$')
             db.session.add(admin)
             db.session.commit()
 

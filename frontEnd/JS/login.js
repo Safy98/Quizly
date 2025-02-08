@@ -1,95 +1,70 @@
-const API_URL = 'http://127.0.0.1:5000';
+import { CONFIG, validators, ErrorHandler, makeRequest , checkAuth } from './utils/auth.js';
 
-const form = document.querySelector("form");
-const emailElement = document.getElementById("email");
-const passwordElement = document.getElementById("password");
-const errorElement = document.querySelector(".welcome p");
+// DOM Elements
+const elements = {
+  form: document.querySelector("#loginForm"),
+  email: document.getElementById("email"),
+  password: document.getElementById("password"),
+  toast: document.getElementById("toast"),
+  errorContainer: document.querySelector(".error-message"),
+};
 
-form.addEventListener("submit", function (event) {
+const errorHandler = new ErrorHandler(elements.errorContainer, elements.toast);
+
+async function handleSubmit(event) {
   event.preventDefault();
-  clearErrors();
+  errorHandler.clearError();
 
-  let isValid = true;
- 
+  const email = elements.email.value.trim();
+  const password = elements.password.value.trim();
 
-  const email = emailElement.value.trim();
-  if (!validateEmail(email)) {
-    showError(emailElement, "Please enter a valid email address.");
-    emailElement.focus();
-    isValid = false;
-  }
-
-  const password = passwordElement.value.trim();
-  if (!validatePassword(password)) {
-    showError(passwordElement, "Password must be at least 6 characters long.");
-    passwordElement.focus();
-    isValid = false;
-  }
-
-
-  if(!isValid)
+  // Validation
+  if (!validators.email(email)) {
+    errorHandler.showToast("Please enter a valid email address");
+    elements.email.focus();
     return;
+  }
 
-  sendRecieveData(email, password);
-//   alert("Form submitted successfully!");
-//   form.submit(); // Uncomment this line to actually submit the form
-});
+  if (!validators.password(password)) {
+    errorHandler.showToast(
+      `Password must be at least ${CONFIG.MIN_PASSWORD_LENGTH} characters`
+    );
+    elements.password.focus();
+    return;
+  }
 
-function validateEmail(email) {
-  const emailRegex = /^(?=.{1,30}$)[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-}
+  try {
+    const response = await makeRequest('/login', 'POST', { email, password });
 
-function validatePassword(password) {
-  return password.length >= 6;
-}
-
-function showError(input, message) {
-  const errorElement = document.createElement("div");
-  errorElement.className = "error-message";
-  errorElement.textContent = message;
-  input.parentElement.appendChild(errorElement);
-}
-
-function clearErrors() {
-  const errors = document.querySelectorAll(".error-message");
-  errors.forEach((error) => error.remove());
-}
-
-async function  sendRecieveData(email, password)
-{
-    const data = {
-        "email": email,
-        "password": password
-    };
-    const respone = await fetch(`${API_URL}/login`, {
-        credentials: "include",
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: {
-            "Content-Type": "application/json"
-        }
-    });
-
-    const responeData = await respone.json();
-    console.log(responeData);
+    if (response.success) {
+      if (response.user.isAdmin) {
+        localStorage.setItem("admin", true);
+        window.location.href = "admin.html";
+      } else {
+        localStorage.setItem("name", response.user.name.split(" ")[0]);
+        window.location.href = "user.html";
+      }
+    }
+  } catch (error) {
+    errorHandler.showToast(error.message);
     
-    if (responeData.success === true) {
-        if (responeData.user.isAdmin === true){ 
-            window.location.href = "admin.html";
-        }else{
-
-            window.location.href = "user.html";
-            localStorage.setItem("name", responeData.user.name.split(" ")[0]);
-
-        }
-
+    if (error.message === CONFIG.ERROR_MESSAGES.AUTH_FAILED) {
+      elements.password.value = "";
+      elements.password.focus();
     }
-    else{
-
-        showError(errorElement, responeData.message);
-       
-    }
-
-
+  }
 }
+
+// Event listeners
+elements.form.addEventListener("submit", handleSubmit);
+
+// elements.email.addEventListener(
+//   "input",
+//   debounce(() => {
+//     if (elements.email.value && !validators.email(elements.email.value.trim())) {
+//       errorHandler.showError("Please enter a valid email address");
+//     } else {
+//       errorHandler.clearError();
+//     }
+//   }, 500)
+// );

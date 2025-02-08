@@ -1,53 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <link rel="stylesheet" href="CSS/login.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
-  </head>
-  <body>
-    <div class="container">
-        <div class="user-logo">
-            <img src="Images/image.png" alt="Quizly">
-        </div>
-      <div class="form-box ">
-          <form id="signupForm" action="submit">
-            <div class="logo">
-                <img src="Images/Logo2.png" alt="Quizly">
-            </div>
-         <div class="welcome">
-            <h1>Get Started</h1>
-            <p>Welcome back - Login to continue</p>
-         </div>
 
-          <div class="email-input">
-            <div>
-                <label for="email">Email</label>
-              </div>
-              <div>
-                <input type="email" id="email" name="email" required maxlength="40" />
-              </div>
-          </div>
-          <div class="password-input">
-            <div>
-                <label for="password">Password</label>
-              </div>
-              <div>
-                <input type="password" id="password" name="password" required maxlength="40" />
-              </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Login to Quizly - Your Quiz Platform" />
+  <title>Quizly - Login</title>
+  
+  <!-- Preload critical assets -->
+  <link rel="preload" href="CSS/login.css" as="style">
+  <link rel="preload" href="Images/Logo2.png" as="image">
+  
+  <!-- Fonts optimization -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="CSS/login.css" />
+
+ <!-- Auth Check Script - Execute immediately -->
+ <script>
+  // Immediate auth check
+  (function() {
+      const isAdmin = localStorage.getItem("admin");
+      if (isAdmin) {
+          window.location.href = "admin.html";
+        }
+        else if(localStorage.getItem('name'))
+        {
+        window.location.href = "user.html";
+        }
+  })();
+</script>
+
+
+</head>
+
+<body>
+  <div id="toast" class="toast" role="alert" aria-live="polite"></div>
+  <div class="container">
+    <div class="user-logo">
+      <img src="Images/image.png" alt="Quizly Login Image" >
+    </div>
+    <div class="form-box ">
+      <form id="loginForm" novalidate>
+        <div class="logo">
+          <img src="Images/Logo2.png" alt="Quizly">
+        </div>
+        <div class="welcome">
+          <h1>Get Started</h1>
+          <p>Welcome back - Login to continue</p>
+        </div>
+
+        <div class="email-input">
+          <div>
+            <label for="email">Email</label>
           </div>
           <div>
-            <button type="submit">LOGIN</button>
+            <input type="email" id="email" name="email" required maxlength="40" />
           </div>
-          <p>Don't have an account? <a href="signup.html">Sign up</a></p>
-        </form>
-      </div>
+        </div>
+        <div class="password-input">
+          <div>
+            <label for="password">Password</label>
+          </div>
+          <div>
+            <input type="password" id="password" name="password" required maxlength="40" />
+          </div>
+        </div>
+        <div class="error-message" aria-live="polite"></div>
+        <div>
+          <button type="submit" aria-label="Login">LOGIN</button>
+        </div>
+        <p>Don't have an account? <a href="signup.html">Sign up</a></p>
+      </form>
     </div>
+  </div>
 
-    <script src="JS/login.js"></script>
-  </body>
+  <script src="JS/login.js" type="module" defer></script>
+</body>
+
 </html>

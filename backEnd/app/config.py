@@ -8,8 +8,6 @@ class Config:
     SECRET_KEY = 'SafeeSrio'  # In production, use a secure secret key
     CORS_ORIGINS = "http://127.0.0.1:5500"
     SESSION_COOKIE_SAMESITE = "None"
+    CORS_HEADERS = 'Content-Type'
+
     SESSION_COOKIE_SECURE = True
-    # CORS_ORIGINS = [
-    #     'http://localhost:5500',  # If your frontend runs on port 3000
-    #     'http://127.0.0.1:5500',
-    # ]
