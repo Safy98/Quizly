@@ -41,30 +41,37 @@ export const validators = {
 
 // Error Handler Class
 export class ErrorHandler {
-    constructor(errorContainer, toast) {
+    constructor(errorContainer = null, toast = null) {
         this.errorContainer = errorContainer;
         this.toast = toast;
+        
     }
 
     showError(message) {
-        console.log( this.errorContainer);
-        
+        if (!this.errorContainer) return;
+
         this.errorContainer.textContent = message;
         this.errorContainer.classList.add("visible");
     }
 
     clearError() {
+        if (!this.errorContainer) return;
+
         this.errorContainer.textContent = "";
         this.errorContainer.classList.remove("visible");
     }
 
     hideToast() {
+        if (!this.toast) return;
+
         this.toast.classList.remove("show");
         this.toast.classList.remove("bg-Error");
         this.toast.classList.remove("bg-Success");
     }
 
     showToast(message, isError = true) {
+        if (!this.toast) return;
+
         this.toast.textContent = message;
         this.toast.classList.add("show");
         if(isError)

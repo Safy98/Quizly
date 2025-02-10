@@ -6,30 +6,39 @@ const elements = {
   email: document.getElementById("email"),
   password: document.getElementById("password"),
   toast: document.getElementById("toast"),
-  errorContainer: document.querySelector(".error-message"),
-};
+  passwordErrorContainer: document.querySelector(".password-error-message"),
+  emailErrorContainer: document.querySelector(".email-error-message"),
 
-const errorHandler = new ErrorHandler(elements.errorContainer, elements.toast);
+};
+const generalErrorHandler = new ErrorHandler(null, elements.toast);
+const emailErrorHandler = new ErrorHandler(elements.emailErrorContainer, elements.toast);
+const passwordErrorHandler = new ErrorHandler(elements.passwordErrorContainer, elements.toast);
 
 async function handleSubmit(event) {
   event.preventDefault();
-  errorHandler.clearError();
-
+  emailErrorHandler.clearError();
+  passwordErrorHandler.clearError();
+  
   const email = elements.email.value.trim();
   const password = elements.password.value.trim();
-
+  let isvalid = true;
   // Validation
   if (!validators.email(email)) {
-    errorHandler.showToast("Please enter a valid email address");
+    emailErrorHandler.showError("Please enter a valid email address");
     elements.email.focus();
-    return;
-  }
+    isvalid = false;
+}
 
   if (!validators.password(password)) {
-    errorHandler.showToast(
+    passwordErrorHandler.showError(
       `Password must be at least ${CONFIG.MIN_PASSWORD_LENGTH} characters`
     );
     elements.password.focus();
+    isvalid = false;
+  }
+
+  
+  if (!isvalid){
     return;
   }
 
@@ -46,7 +55,7 @@ async function handleSubmit(event) {
       }
     }
   } catch (error) {
-    errorHandler.showToast(error.message);
+    generalErrorHandler.showToast(error.message);
     
     if (error.message === CONFIG.ERROR_MESSAGES.AUTH_FAILED) {
       elements.password.value = "";

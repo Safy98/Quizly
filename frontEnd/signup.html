@@ -7,7 +7,7 @@
     <title>Quizly - Sign Up</title>
     
     <!-- Preload critical assets -->
-    <link rel="preload" href="CSS/login.css" as="style">
+    <link rel="preload" href="CSS/signup.css" as="style">
     <link rel="preload" href="Images/Logo2.png" as="image">
     
     <!-- Fonts optimization -->
@@ -15,21 +15,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
     
-    <link rel="stylesheet" href="CSS/login.css" />
+    <link rel="stylesheet" href="CSS/signup.css" />
 
-    <script>
-      // Immediate auth check
-      (function() {
-          const isAdmin = localStorage.getItem("admin");
-          if (isAdmin) {
-              window.location.href = "admin.html";
-            }
-            else if(localStorage.getItem('name'))
-            {
-            window.location.href = "user.html";
-            }
-      })();
-    </script>
+    <!-- Auth Check Script - Execute immediately -->
+  <script src="JS/utils/isLogged.js"></script>
 
   </head>
   <body>
@@ -53,6 +42,7 @@
             <div>
                 <label for="name">Name</label>
               </div>
+              <div class="error-message name-error-message" aria-live="polite"></div>
               <div>
                 <input 
                     type="text" 
@@ -69,6 +59,8 @@
             <div>
                 <label for="email">Email</label>
               </div>
+              <div class="error-message email-error-message" aria-live="polite"></div>
+
               <div>
                 <input 
                     type="email" 
@@ -85,6 +77,8 @@
             <div>
                 <label for="password">Password</label>
               </div>
+              <div class="error-message password-error-message" aria-live="polite"></div>
+
               <div>
                 <input 
                     type="password" 
@@ -101,6 +95,8 @@
             <div>
                 <label for="confirm-password">Confirm Password</label>
               </div>
+              <div class="error-message confirmPassword-error-message" aria-live="polite"></div>
+
               <div>
                 <input 
                     type="password" 
@@ -113,8 +109,6 @@
                 />
               </div>
           </div>
-          <!-- Error message container -->
-          <div class="error-message" aria-live="polite"></div>
           <div>
             <button type="submit" aria-label="Sign up">Sign up</button>
           </div>

@@ -444,6 +444,7 @@ body{
     background-color: #F9FAFB;
     width: 100%;
     padding: 10px;
+    border: 4px solid transparent;
     border-radius: 8px;
 }
 

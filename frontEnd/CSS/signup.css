@@ -1,0 +1,193 @@
+:root {
+    --primary-color: #0d9488;
+    --primary-hover: #37f7e7;
+    --background-color: #f3f4f6;
+    --text-color: #16191e;
+    --error-color: #dc2626;
+  }
+  *,
+  ::after,
+  ::before {
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+  }
+  
+  body {
+    background-color: var(--primary-color);
+    font-family: "Lato", sans-serif;
+    min-height: 100vh;
+  
+  }
+  
+  .container {
+    position: relative;
+    display: flex;
+    height: 100vh;
+  }
+  
+  .user-logo {
+    width: 50%;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .user-logo img {
+    width: 80%;
+   object-fit: contain;
+  }
+  
+  .form-box {
+    border-top-left-radius: 88px;
+    border-bottom-left-radius: 88px;
+    width: 50%;
+    /* height: 100%; */
+    background-color: var(--background-color);
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    transition: all 0.5s ease-in-out;
+  }
+  
+  /* .form-box img {
+    width: 20%;
+  } */
+  
+  .logo img {
+    width: 100%;
+  }
+  
+  .welcome {
+    text-align: start;
+    margin-bottom: 20px;
+  }
+  .welcome h1 {
+    font-size: 24px;
+    color: #16191e;
+    margin-bottom: 0px;
+    text-align: start;
+  }
+  
+  .welcome p {
+    font-size: 24px;
+    color: #666;
+    font-weight: 400;
+    margin-bottom: 10px;
+    text-align: start;
+  }
+  
+  .email-input,
+  .name-input ,
+  .confirm-password-input,
+  .password-input {
+    margin-bottom: 20px;
+    text-align: left;
+  }
+  
+  label {
+    display: block;
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 5px;
+  }
+  
+  
+  input {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid var(--text-color);
+    border-radius: 5px;
+    outline: none;
+  }
+  
+  input:focus {
+    border-color: #37f7e7;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+  }
+  
+  button[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 24px;
+    color: #fff;
+    background-color: var(--primary-color);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 0px;
+  }
+  
+  button[type="submit"]:hover {
+    background-color: #37f7e7;
+  }
+  
+  p {
+    font-size: 14px;
+    color: #666;
+    margin-top: 10px;
+  }
+  div + p {
+    font-size: 16px;
+    color: #666;
+    margin-top: 10px;
+  }
+  a {
+    color: var(--primary-color);
+    text-decoration: none;
+  }
+  
+  a:hover {
+    text-decoration: underline;
+  }
+  
+  form {
+    width: 50%;
+  }
+  .error-message {
+      color: red;
+      font-size: 12px;
+      margin-bottom: 5px;
+  }
+  
+  @media screen and (max-width: 768px) {
+    .user-logo {
+      display: none;
+    }
+    .form-box {
+      width: 100%;
+      border-top-left-radius: 0px;
+      border-bottom-left-radius: 0px;
+  
+    }
+     
+    
+  }
+  .toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 4px;
+    font-size: 16px;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+  }
+  
+  .toast.show {
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  .bg-Error{
+    background-color: rgba(209, 39, 39, 0.8);
+  }
+  .bg-Success{
+    background-color: rgba(4, 185, 79, 0.8);
+  }

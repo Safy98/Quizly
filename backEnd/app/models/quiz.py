@@ -11,7 +11,8 @@ class Quiz(db.Model):
     questions = db.relationship('Question', backref='quiz', cascade='all, delete-orphan')
 
     def __repr__(self):
-        return f'<Quiz {self.topic}>'
+        return f"<Quiz(id={self.id}, topic='{self.topic}', level='{self.level}', questions={len(self.questions)})>"
+
 
     def to_dict(self):
         return {

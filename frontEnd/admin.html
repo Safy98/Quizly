@@ -19,16 +19,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
 
-    <!-- Auth Check Script - Execute immediately -->
-    <script>
-        // Immediate auth check
-        (function() {
-            const isAdmin = localStorage.getItem("admin");
-            if (!isAdmin) {
-                window.location.href = "login.html";
-            }
-        })();
-    </script>
+   <!-- Auth Check Script - Execute immediately -->
+   <script src="JS/utils/isLogged.js"></script>
 </head>
 <body>
     <!-- Toast notification container -->

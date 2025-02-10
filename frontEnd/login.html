@@ -19,19 +19,8 @@
   <link rel="stylesheet" href="CSS/login.css" />
 
  <!-- Auth Check Script - Execute immediately -->
- <script>
-  // Immediate auth check
-  (function() {
-      const isAdmin = localStorage.getItem("admin");
-      if (isAdmin) {
-          window.location.href = "admin.html";
-        }
-        else if(localStorage.getItem('name'))
-        {
-        window.location.href = "user.html";
-        }
-  })();
-</script>
+  <script src="JS/utils/isLogged.js"></script>
+
 
 
 </head>
@@ -56,6 +45,7 @@
           <div>
             <label for="email">Email</label>
           </div>
+          <div class="email-error-message error-message" aria-live="polite"></div>
           <div>
             <input type="email" id="email" name="email" required maxlength="40" />
           </div>
@@ -64,11 +54,11 @@
           <div>
             <label for="password">Password</label>
           </div>
+          <div class="password-error-message error-message" aria-live="polite"></div>
           <div>
             <input type="password" id="password" name="password" required maxlength="40" />
           </div>
         </div>
-        <div class="error-message" aria-live="polite"></div>
         <div>
           <button type="submit" aria-label="Login">LOGIN</button>
         </div>

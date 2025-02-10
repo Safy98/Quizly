@@ -19,78 +19,106 @@ const elements = {
 
 const errorHandler = new ErrorHandler(elements.errorContainer, elements.toast);
 
-let questionCounter = 0;
+// let currentQuestion = {
+
+// }
+
 let score = 0;
 
 let correctAnswers = [];
-let userQuiz;
-
+let answers;
+let question;
+let quizid;
 // Initialize
 const init = async () => {
+  quizid = localStorage.getItem("quizid");
   try {
-    userQuiz = JSON.parse(localStorage.getItem("userQuiz"));
+    const response = await makeRequest(`/startQuiz/${quizid}`, "POST");
+    console.log(response);
+    
+    if (response.success) {
+      if (response.completed) {
+        console.log('hi1');
+        
+        finishQuiz();
+            
+      } else {
+        console.log('hi');
+        
+        ({ question } = response);
+        answers = question.answers;
+        elements.quizTopic.textContent = response.topic;
 
-    if (!userQuiz) {
-      window.location.href = "user.html";
-      
+        elements.userName.textContent = localStorage.getItem("name");
+
+        // Add event listeners
+
+        elements.logoutBtn.addEventListener("click", () => handleLogout(makeRequest));
+        elements.finishBtn.addEventListener("click", finishQuiz);
+        elements.submitBtn.addEventListener("click", checkAnswer);
+
+        elements.exitBtn.addEventListener("click", () => {
+          window.location.href = "user.html";
+        });
+
+        elements.nextBtn.disabled = false;
+
+        showQuestion();
+      }
+    } else {
+      throw new Error(response.message);
     }
-    // Set username
-    elements.userName.textContent = localStorage.getItem("name");
-
-    // Add event listeners
-
-    elements.logoutBtn.addEventListener("click", () =>
-      handleLogout(makeRequest)
-    );
-    elements.finishBtn.addEventListener("click", finishQuiz);
-    elements.submitBtn.addEventListener("click", checkAnswer);
-
-    elements.exitBtn.addEventListener("click", () => {
-      localStorage.removeItem("userQuiz");
-      window.location.href = "user.html";
-    });
-
-    elements.quizTopic.textContent = userQuiz.topic;
-    elements.nextBtn.disabled = false;
-
-    showQuestion(questionCounter);
   } catch (error) {
+    elements.quizContainer.innerHTML = "";
     errorHandler.showToast(error.message);
-    throw error;
   }
 };
 
 // Start the application
 document.addEventListener("DOMContentLoaded", init);
 
-function showResult(){
-
+function showResult() {
   elements.quizContainer.innerHTML = ``;
   const element = document.createElement("div");
   element.classList.add("finish");
   element.innerHTML = `
  <h2>Finished</h2>
- <h3>Score: ${score} / ${userQuiz.questions.length}</h3>
+ <h3>Score: ${score} </h3>
  `;
   elements.quizContainer.appendChild(element);
-  localStorage.removeItem("userQuiz");
 }
 
 async function finishQuiz() {
-
   try {
-
     const data = await makeRequest(`/submitQuiz`, "POST", {
       score: score,
-      quizId: userQuiz.id,
+      quizId: quizid,
     });
 
     if (data.success) {
       showResult();
     }
-
   } catch (error) {
+    errorHandler.showToast(error.message);
+  }
+}
 
+async function getNextQuestion() {
+  try {
+    const response = await makeRequest(`/nextQuestion`, "POST", { score });
+    if (response.success) {
+      if (response.completed) {
+        elements.nextBtn.classList.add("hide");
+        elements.finishBtn.classList.remove("hide");
+        elements.finishBtn.disabled = false;
+      } else {
+        ({ question } = response);
+        console.log(response);
+
+        answers = question.answers;
+      }
+    }
+  } catch (error) {
     errorHandler.showToast(error.message);
   }
 }
@@ -102,21 +130,20 @@ elements.nextBtn.addEventListener("click", function () {
     answer.remove();
   });
 
-  showQuestion(questionCounter);
+  showQuestion();
 });
 
-function checkAnswer(){
-  const question = userQuiz.questions[questionCounter];
+function checkAnswer() {
   const type = question.questionType;
 
   if (type === "paragraph") {
     return;
   }
-  const answers = question.answers;
   let isQuestionCorrect = true;
   const AllchoicesInput = Array.from(
     elements.questionArea.querySelectorAll(`input[type="${type}"]`)
   );
+
   const choosedInput = Array.from(
     elements.questionArea.querySelectorAll(`input[type="${type}"]:checked`)
   );
@@ -138,17 +165,14 @@ function checkAnswer(){
     return elements.questionArea.querySelector(`label[for="${id}"]`);
   });
   let choosedLables = choosedIDs.map(function (id) {
-    return elements.questionArea.querySelector(
-      `label[for="${id}"]`
-    ).textContent;
+    return elements.questionArea.querySelector(`label[for="${id}"]`).textContent;
   });
 
-  
   for (let i = 0; i < AllchoicesLabels.length; i++) {
     let choice = AllchoicesLabels[i];
 
     if (correctAnswers.includes(choice.textContent)) {
-      choice.style.backgroundColor = "#198754";
+      choice.style.borderColor = "#0d9488";
       if (type === "radio") {
         break;
       }
@@ -156,7 +180,7 @@ function checkAnswer(){
       !correctAnswers.includes(choice.textContent) &&
       choosedLables.includes(choice.textContent)
     ) {
-      choice.style.backgroundColor = "#DC3545";
+      choice.style.borderColor = "#DC3545";
       isQuestionCorrect = false;
     }
   }
@@ -164,20 +188,18 @@ function checkAnswer(){
   if (isQuestionCorrect) {
     score++;
   }
-  questionCounter++;
 
   elements.nextBtn.disabled = false;
   elements.submitBtn.disabled = true;
-  elements.finishBtn.disabled = false;
+  // elements.finishBtn.disabled = false;
 
+  getNextQuestion();
 }
 
-
-function showQuestion(QuestionNumber) {
-  const question = userQuiz.questions[QuestionNumber];
-  const answers = question.answers;
-
-  elements.questionNumber.textContent = `${QuestionNumber + 1}`;
+function showQuestion() {
+  const questionNumber = question.questionNumber;
+  const questionsleft = question.questionsleft;
+  elements.questionNumber.textContent = `${questionNumber}`;
   elements.questionText.textContent = question.questionText;
 
   if (question.questionType === "paragraph") {
@@ -211,12 +233,7 @@ function showQuestion(QuestionNumber) {
     });
   }
 
-  if (questionCounter + 1 === userQuiz.questions.length) {
-    elements.nextBtn.classList.add("hide");
-    elements.finishBtn.classList.remove("hide");
-    elements.finishBtn.disabled = true;
-
-  }
+  
 
   elements.nextBtn.disabled = true;
   elements.submitBtn.disabled = false;

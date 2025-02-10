@@ -1,3 +1,6 @@
+import { ErrorHandler } from "../utils/auth.js";
+
+
 // Common DOM utility functions
 export const createCard = (quiz, isAdmin = false, score = null) => `
     <div class="card" id="${quiz.id}">
@@ -41,7 +44,8 @@ export const handleLogout = async (makeRequest, isAdmin = false) => {
             window.location.href = "login.html";
         }
     } catch (error) {
-        console.error('Logout failed:', error);
+        console.log(error);
+        
     }
 };
 

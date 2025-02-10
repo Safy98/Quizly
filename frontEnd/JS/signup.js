@@ -8,15 +8,32 @@ const elements = {
     password: document.getElementById("password"),
     confirmPassword: document.getElementById("confirm-password"),
     toast: document.getElementById("toast"),
-    errorContainer: document.querySelector(".error-message"),
+    nameErrorContainer: document.querySelector(".name-error-message"),
+    emailErrorContainer: document.querySelector(".email-error-message"),
+    passwordErrorContainer: document.querySelector(".password-error-message"),
+    confPassErrorContainer: document.querySelector(".confirmPassword-error-message"),
 };
 
-const errorHandler = new ErrorHandler(elements.errorContainer, elements.toast);
+const generalErrorHandler = new ErrorHandler(null, elements.toast);
+const nameErrorHandler = new ErrorHandler(elements.nameErrorContainer,null);
+const emailErrorHandler = new ErrorHandler(elements.emailErrorContainer, null);
+const passwordErrorHandler = new ErrorHandler(elements.passwordErrorContainer, null);
+const confPasswordErrorHandler = new ErrorHandler(elements.confPassErrorContainer, null);
 
 async function handleSubmit(event) {
     event.preventDefault();
-    errorHandler.clearError();
 
+    console.log(elements.confPassErrorContainer);
+    console.log(elements.nameErrorContainer);
+    console.log(elements.emailErrorContainer);
+    console.log(elements.confPassErrorContainer);
+    generalErrorHandler.clearError();
+    nameErrorHandler.clearError();
+    emailErrorHandler.clearError();
+    passwordErrorHandler.clearError();
+    confPasswordErrorHandler.clearError();
+
+    let isvalid = true;
   let responseMessage;
 
     const name = elements.name.value.trim();
@@ -26,55 +43,46 @@ async function handleSubmit(event) {
 
     // Validations
     if (!validators.name(name)) {
-        errorHandler.showError("Please enter a valid name");
+        nameErrorHandler.showError("Please enter a valid name");
         elements.name.focus();
-        return;
+        isvalid=false;
     }
 
     if (!validators.email(email)) {
-        errorHandler.showError("Please enter a valid email address");
+        emailErrorHandler.showError("Please enter a valid email address");
         elements.email.focus();
-        return;
+        isvalid=false;    
     }
 
     if (!validators.password(password)) {
-        errorHandler.showError(`Password must be at least ${CONFIG.MIN_PASSWORD_LENGTH} characters`);
+        passwordErrorHandler.showError(`Password must be at least ${CONFIG.MIN_PASSWORD_LENGTH} characters and contains special characters`);
         elements.password.focus();
-        return;
+        isvalid=false;    
     }
 
     if (password !== confirmPassword) {
-        errorHandler.showError("Passwords do not match");
+        confPasswordErrorHandler.showError("Passwords do not match");
         elements.confirmPassword.focus();
-        return;
+        isvalid=false;    
     }
+
+    if (!isvalid) {
+        return;
+    } 
 
     try {
         const response = await makeRequest('/register', 'POST', { name, email, password });
         responseMessage = response.message;
         if (response.success) {
-          errorHandler.showToast(responseMessage,false)
             localStorage.setItem("name", response.user.name.split(" ")[0]);
-            console.log(response);
             
             window.location.href = "user.html";
         }
     } catch (error) {
-        errorHandler.showToast(error.message);
+        generalErrorHandler.showToast(error.message);
     }
 }
 
-// Event listeners
 elements.form.addEventListener("submit", handleSubmit);
 
-// Input validation
-// elements.email.addEventListener(
-//     "input",
-//     debounce(() => {
-//         if (elements.email.value && !validators.email(elements.email.value.trim())) {
-//             errorHandler.showError("Please enter a valid email address");
-//         } else {
-//             errorHandler.clearError();
-//         }
-//     }, 500)
-// );
+

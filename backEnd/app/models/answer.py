@@ -7,5 +7,13 @@ class Answer(db.Model):
     isCorrect = db.Column(db.Boolean, nullable=False)
     question_id = db.Column(db.Integer, db.ForeignKey('question.id'), nullable=False)
 
+
     def __repr__(self):
-        return f'<Answer {self.answerText}>'
+        return f'<Answer(id={self.id}, text="{self.answerText}", isCorrect={self.isCorrect})>'
+
+    # def __init__(self, answerText, isCorrect, question_id):
+    #     self.answerText = answerText
+    #     self.isCorrect = isCorrect
+    #     self.question_id = question_id
+
+    

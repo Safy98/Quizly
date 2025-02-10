@@ -9,4 +9,5 @@ class Question(db.Model):
     answers = db.relationship('Answer', backref='question', cascade='all, delete-orphan')
 
     def __repr__(self):
-        return f'<Question {self.question_text}>'
+        return f'<Question(id={self.id}, text="{self.question_text}", type="{self.question_type}", quiz_id={self.quiz_id})>'
+
