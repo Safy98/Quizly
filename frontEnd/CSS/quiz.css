@@ -510,3 +510,39 @@ input[type="checkbox"] {
     }
    
 }
+
+
+
+.toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 4px;
+    font-size: 16px;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+  }
+  
+  .toast.show {
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  .bg-Error{
+    background-color: rgba(209, 39, 39, 0.8);
+  }
+  .bg-Success{
+    background-color: rgba(4, 185, 79, 0.8);
+  }
+
+  .error-message {
+    color: red;
+    font-size: 16px;
+    margin-top: 5px;
+}

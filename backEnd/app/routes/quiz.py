@@ -1,3 +1,4 @@
+from math import log
 from flask import Blueprint, jsonify, request, session, current_app
 from marshmallow import Schema, fields, validate, ValidationError
 from functools import wraps
@@ -6,6 +7,8 @@ from ..models.question import Question
 from ..models.answer import Answer
 from ..models.user import User, user_quiz
 from ..extensions import db, limiter
+from sqlalchemy import select,delete
+
 
 quiz = Blueprint('quiz', __name__)
 
@@ -197,25 +200,30 @@ def submitQuiz():
         quiz = Quiz.query.get_or_404(data['quizId'])
 
         # Validate score
-        if not isinstance(data['score'], (int))  :
+        if not isinstance(data['score'], int):
             return jsonify({'success': False, 'message': 'Invalid score value'}), 400
 
         # Check if user has already submitted this quiz
-        # existing_submission = db.session.query(user_quiz).filter_by(
-        #     user_id=user.id, 
-        #     quiz_id=quiz.id
-        # ).first()
+        stmt = select(user_quiz).where(
+            user_quiz.c.user_id == user.id,
+            user_quiz.c.quiz_id == quiz.id
+        )
+        existing_submission = db.session.execute(stmt).fetchone()
 
-        # if existing_submission:
-        #     return jsonify({'success': False, 'message': 'Quiz already submitted'}), 400
+        if existing_submission:
+            delete_stmt = delete(user_quiz).where(
+                user_quiz.c.user_id == user.id,
+                user_quiz.c.quiz_id == quiz.id
+            )
+            db.session.execute(delete_stmt)
 
-        # Add the quiz score
-        stmt = user_quiz.insert().values(
+        # ✅ Correct way to insert into the table
+        insert_stmt = user_quiz.insert().values(
             user_id=user.id,
             quiz_id=quiz.id,
             score=data['score']
         )
-        db.session.execute(stmt)
+        db.session.execute(insert_stmt)
         db.session.commit()
 
         return jsonify({'success': True, 'message': 'Quiz submitted successfully!'}), 201

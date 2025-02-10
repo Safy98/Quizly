@@ -1,4 +1,4 @@
-import { CONFIG, validators, ErrorHandler, makeRequest , checkAuth } from './utils/auth.js';
+import { CONFIG, validators, ErrorHandler, makeRequest  } from './utils/auth.js';
 
 // DOM Elements
 const elements = {

@@ -60,8 +60,11 @@ const addQuizCard = (quizData) => {
 };
 
 const displayQuizes = ({ quizzes }, filter = 'all') => {
-    elements.quizSpace.innerHTML = "";
+    
     const hasQuizzes = quizzes.length > 0;
+    if (hasQuizzes)
+        elements.quizSpace.innerHTML = "";
+    
     elements.contentEmpty.classList.toggle("hide", hasQuizzes);
     elements.addQuizBtn2.classList.toggle("hide", !hasQuizzes);
     elements.quizSpace.classList.toggle("flex-it", hasQuizzes);

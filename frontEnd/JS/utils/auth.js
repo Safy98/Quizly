@@ -16,6 +16,7 @@ export const checkAuth = () => {
     const isAdmin = localStorage.getItem("admin");
     if (!isAdmin) {
         window.location.href = "login.html";
+        
         return false;
     }
     return true;
@@ -46,6 +47,8 @@ export class ErrorHandler {
     }
 
     showError(message) {
+        console.log( this.errorContainer);
+        
         this.errorContainer.textContent = message;
         this.errorContainer.classList.add("visible");
     }
@@ -93,7 +96,6 @@ export async function makeRequest(endpoint, method, data) {
         }).finally(() => clearTimeout(timeoutId));
 
         const responseData = await response.json();
-        console.log(responseData);
         
         if (!response.ok) {
             throw new Error(response.status)

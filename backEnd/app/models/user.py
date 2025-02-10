@@ -2,6 +2,7 @@ from ..extensions import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from .quiz import Quiz
 
+
 user_quiz = db.Table('user_quiz',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
     db.Column('quiz_id', db.Integer, db.ForeignKey('quiz.id'), primary_key=True),

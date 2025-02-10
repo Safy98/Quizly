@@ -43,5 +43,28 @@ export const handleLogout = async (makeRequest, isAdmin = false) => {
     } catch (error) {
         console.error('Logout failed:', error);
     }
+};
+
+export const showError = (element, message) => {
+   
+    const errorElement = element.querySelector(".error-message");
+    
+    errorElement.textContent = message;
+    
+    
+    element.classList.add("invalid-input");
+};
+
+export const clearError = () => {
+    const errorElements = document.querySelectorAll(".error-message");
+    const errorinputs = document.querySelectorAll(".invalid-input");
+    errorElements.forEach((error)=>{
+        error.textContent= "";
+    })
+    errorinputs.forEach((error)=>{
+        error.classList.remove("invalid-input");
+
+    })
 }; 
+ 
 

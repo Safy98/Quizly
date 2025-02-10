@@ -1,98 +1,102 @@
-const API_URL = 'http://127.0.0.1:5000';
+import { CONFIG, makeRequest, ErrorHandler } from "./utils/auth.js";
+import { createCard, handleFilter, handleLogout } from "./utils/shared.js";
 
-const userName = document.querySelector(".user-name");
-const quizTopic = document.querySelector(".quiz-topic");
-const questionText = document.querySelector(".question-text");
-const questionNumber = document.querySelector(".question-number");
-const nextBtn = document.querySelector(".next");
-const submitBtn = document.querySelector(".submit");
-const finishBtn = document.querySelector(".finish");
-const questionArea = document.querySelector(".question");
-const quizContainer = document.querySelector(".quiz-space");
-const logoutBtn = document.querySelector(".logout");
-const exitBtn = document.querySelector(".exit");
+const elements = {
+  userName: document.querySelector(".user-name"),
+  quizTopic: document.querySelector(".quiz-topic"),
+  questionText: document.querySelector(".question-text"),
+  questionNumber: document.querySelector(".question-number"),
+  nextBtn: document.querySelector(".next"),
+  submitBtn: document.querySelector(".submit"),
+  finishBtn: document.querySelector(".finish"),
+  questionArea: document.querySelector(".question"),
+  quizContainer: document.querySelector(".quiz-space"),
+  logoutBtn: document.querySelector(".logout"),
+  exitBtn: document.querySelector(".exit"),
+  toast: document.getElementById("toast"),
+  errorContainer: document.querySelector(".error-container"),
+};
 
+const errorHandler = new ErrorHandler(elements.errorContainer, elements.toast);
 
+let questionCounter = 0;
 let score = 0;
 
-
-
-exitBtn.addEventListener("click", function () {
-  localStorage.removeItem("userQuiz");
-  window.location.href = "user.html";
-})
-
-async function logout() {
-  const respone = await fetch(`${API_URL}/logout`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-
-
-  });
-
-  const responeData = await respone.json();
-  console.log('logout',responeData);
-  
-  if (responeData.success === true) {
-    localStorage.removeItem("name");
-    localStorage.removeItem("userQuiz");
-    window.location.href = "login.html";
-  }
-
-}
-
-logoutBtn.addEventListener("click", logout);
 let correctAnswers = [];
-userName.textContent = localStorage.getItem("name");
-const userQuiz = JSON.parse(localStorage.getItem("userQuiz"));
+let userQuiz;
 
-if (!userQuiz) {
-  window.location.href = "user.html";
-}
-quizTopic.textContent = userQuiz.topic;
-nextBtn.disabled = false;
-let questionCounter = 0;
-showQuestion(questionCounter);
+// Initialize
+const init = async () => {
+  try {
+    userQuiz = JSON.parse(localStorage.getItem("userQuiz"));
 
-finishBtn.addEventListener("click", function () {
-  // quizContainer.classList.add("hide");
-  quizContainer.innerHTML=``;
+    if (!userQuiz) {
+      window.location.href = "user.html";
+      
+    }
+    // Set username
+    elements.userName.textContent = localStorage.getItem("name");
+
+    // Add event listeners
+
+    elements.logoutBtn.addEventListener("click", () =>
+      handleLogout(makeRequest)
+    );
+    elements.finishBtn.addEventListener("click", finishQuiz);
+    elements.submitBtn.addEventListener("click", checkAnswer);
+
+    elements.exitBtn.addEventListener("click", () => {
+      localStorage.removeItem("userQuiz");
+      window.location.href = "user.html";
+    });
+
+    elements.quizTopic.textContent = userQuiz.topic;
+    elements.nextBtn.disabled = false;
+
+    showQuestion(questionCounter);
+  } catch (error) {
+    errorHandler.showToast(error.message);
+    throw error;
+  }
+};
+
+// Start the application
+document.addEventListener("DOMContentLoaded", init);
+
+function showResult(){
+
+  elements.quizContainer.innerHTML = ``;
   const element = document.createElement("div");
   element.classList.add("finish");
   element.innerHTML = `
-  <h2>Finished</h2>
-  <h3>Score: ${score} / ${userQuiz.questions.length}</h3>
-  `;
-  quizContainer.appendChild(element);
+ <h2>Finished</h2>
+ <h3>Score: ${score} / ${userQuiz.questions.length}</h3>
+ `;
+  elements.quizContainer.appendChild(element);
   localStorage.removeItem("userQuiz");
+}
 
+async function finishQuiz() {
 
-    fetch(`${API_URL}/submitQuiz`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        // name: localStorage.getItem("name"),
-        score: score,
-        quizId: userQuiz.id
-      }),
-    }).then((respone) => respone.json()).then((data) => {
-      console.log(data);
-    }).catch((error) => {
-      console.log(error);
-    })
-    
+  try {
 
+    const data = await makeRequest(`/submitQuiz`, "POST", {
+      score: score,
+      quizId: userQuiz.id,
+    });
 
+    if (data.success) {
+      showResult();
+    }
 
-});
+  } catch (error) {
 
-nextBtn.addEventListener("click", function () {
-  const allAnswers = questionArea.querySelectorAll(".answer-option");
+    errorHandler.showToast(error.message);
+  }
+}
+
+elements.nextBtn.addEventListener("click", function () {
+  const allAnswers = elements.questionArea.querySelectorAll(".answer-option");
 
   allAnswers.forEach(function (answer) {
     answer.remove();
@@ -101,25 +105,27 @@ nextBtn.addEventListener("click", function () {
   showQuestion(questionCounter);
 });
 
-submitBtn.addEventListener("click", function () {
-  let correctAnswer;
+function checkAnswer(){
   const question = userQuiz.questions[questionCounter];
   const type = question.questionType;
 
   if (type === "paragraph") {
-   return;
+    return;
   }
   const answers = question.answers;
   let isQuestionCorrect = true;
-  const AllchoicesInput = Array.from(questionArea.querySelectorAll(`input[type="${type}"]`));
-  const choosedInput = Array.from(questionArea.querySelectorAll(`input[type="${type}"]:checked`));
-  
+  const AllchoicesInput = Array.from(
+    elements.questionArea.querySelectorAll(`input[type="${type}"]`)
+  );
+  const choosedInput = Array.from(
+    elements.questionArea.querySelectorAll(`input[type="${type}"]:checked`)
+  );
+
   if (choosedInput.length === 0) {
-    showError(questionArea, "Please select an answer");
+    errorHandler.showToast("Please select an answer");
     return;
-  }
-  else{
-    clearError(questionArea);
+  } else {
+    errorHandler.hideToast(elements.questionArea);
   }
 
   const AllchoicesIDs = AllchoicesInput.map(function (choice) {
@@ -129,23 +135,21 @@ submitBtn.addEventListener("click", function () {
     return choice.getAttribute("id");
   });
   let AllchoicesLabels = AllchoicesIDs.map(function (id) {
-    return questionArea.querySelector(`label[for="${id}"]`);
+    return elements.questionArea.querySelector(`label[for="${id}"]`);
   });
   let choosedLables = choosedIDs.map(function (id) {
-    return questionArea.querySelector(`label[for="${id}"]`).textContent;
+    return elements.questionArea.querySelector(
+      `label[for="${id}"]`
+    ).textContent;
   });
 
-  console.log(choosedLables);
-  console.log(AllchoicesLabels);
-  console.log(correctAnswers);
   
   for (let i = 0; i < AllchoicesLabels.length; i++) {
     let choice = AllchoicesLabels[i];
-    console.log(choice.textContent);
-    
+
     if (correctAnswers.includes(choice.textContent)) {
       choice.style.backgroundColor = "#198754";
-      if(type ==="radio"){
+      if (type === "radio") {
         break;
       }
     } else if (
@@ -156,49 +160,16 @@ submitBtn.addEventListener("click", function () {
       isQuestionCorrect = false;
     }
   }
-  
-  
-  // AllchoicesLabels.forEach(function (choice) {
-  //   console.log(choice.textContent);
-  //   if (correctAnswers.includes(choice.textContent)) {
-  //     choice.style.backgroundColor = "#198754";
-    
-  //   } else if (
-  //     !correctAnswers.includes(choice.textContent) &&
-  //     choosedLables.includes(choice.textContent)
-  //   ) {
-  //     choice.style.backgroundColor = "#DC3545";
-  //     isQuestionCorrect = false;
-  //   }
-  // });
+
   if (isQuestionCorrect) {
     score++;
   }
   questionCounter++;
 
-  nextBtn.disabled = false;
-  submitBtn.disabled = true;
-});
+  elements.nextBtn.disabled = false;
+  elements.submitBtn.disabled = true;
+  elements.finishBtn.disabled = false;
 
-console.log(userQuiz);
-
-function showError(inputElement, message) {
-  // Check if an error message already exists
-  let errorElement = inputElement.parentElement.querySelector(".error-message");
-  if (!errorElement) {
-    // Create a new error message element
-    errorElement = document.createElement("div");
-    errorElement.className = "error-message";
-    errorElement.textContent = message;
-    // Insert the error message just above the input
-    inputElement.parentElement.insertBefore(errorElement, inputElement);
-  } else {
-    // Update the existing error message
-    errorElement.textContent = message;
-  }
-
-  // Add a class to highlight the invalid input (optional)
-  inputElement.classList.add("invalid-input");
 }
 
 
@@ -206,14 +177,10 @@ function showQuestion(QuestionNumber) {
   const question = userQuiz.questions[QuestionNumber];
   const answers = question.answers;
 
-  questionNumber.textContent = `${QuestionNumber + 1}`;
-  questionText.textContent = question.questionText;
-
-  console.log(typeof question.questionType);
+  elements.questionNumber.textContent = `${QuestionNumber + 1}`;
+  elements.questionText.textContent = question.questionText;
 
   if (question.questionType === "paragraph") {
-    console.log("para");
-
     const answerOption = document.createElement("div");
     answerOption.classList.add("answer-option");
     answerOption.innerHTML = `
@@ -222,7 +189,7 @@ function showQuestion(QuestionNumber) {
 
                  </div>
        `;
-    questionArea.appendChild(answerOption);
+    elements.questionArea.appendChild(answerOption);
   } else {
     answers.forEach((answer, index) => {
       const answerOption = document.createElement("div");
@@ -240,27 +207,17 @@ function showQuestion(QuestionNumber) {
         correctAnswers.push(answer.answerText);
       }
 
-      questionArea.appendChild(answerOption);
+      elements.questionArea.appendChild(answerOption);
     });
   }
 
   if (questionCounter + 1 === userQuiz.questions.length) {
-    nextBtn.classList.add("hide");
-    finishBtn.classList.remove("hide");
+    elements.nextBtn.classList.add("hide");
+    elements.finishBtn.classList.remove("hide");
+    elements.finishBtn.disabled = true;
+
   }
 
-  nextBtn.disabled = true;
-  submitBtn.disabled = false;
-}
-
-
-
-function clearError(inputElement) {
-  const errorElement = inputElement.parentElement.querySelector(".error-message");
-  if (errorElement) {
-    errorElement.remove(); // Remove the error message
-  }
-
-  // Remove the invalid input class (optional)
-  inputElement.classList.remove("invalid-input");
+  elements.nextBtn.disabled = true;
+  elements.submitBtn.disabled = false;
 }

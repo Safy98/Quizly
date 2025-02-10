@@ -1,475 +1,392 @@
 "use strict";
-const API_URL = 'http://127.0.0.1:5000';
+import { CONFIG, makeRequest, ErrorHandler, checkAuth } from "./utils/auth.js";
+import { handleLogout, showError, clearError } from "./utils/shared.js";
 
-const AddQuestionBtnEle = document.querySelector(".add-btn");
-const saveBtnEle = document.querySelector(".save-btn");
-const questionTypeInputEle = document.querySelector("#question-type");
-const deleteQuestionBtn = document.querySelector(".questionAndIcon button");
-const questionContainer = document.querySelector("#questions-container");
-const quizTopicInputEle = document.querySelector("#topic");
-const quizLevelSelectEle = document.querySelector("#level");
-const quizDescriptionTextAreaEle = document.querySelector("#description");
-const logoutBtn = document.querySelector(".logout");
+const elements = {
+  addQuestionBtn: document.querySelector(".add-btn"),
+  saveBtn: document.querySelector(".save-btn"),
+  questionType: document.querySelector("#question-type"),
+  deleteQuestionBtn: document.querySelector(".questionAndIcon button"),
+  questionsContainer: document.querySelector("#questions-container"),
+  quizTopicInput: document.querySelector("#topic"),
+  quizTopicEle : document.querySelector(".topic"),
+  quizLevel: document.querySelector("#level"),
+  quizDescription: document.querySelector("#description"),
+  quizDescriptionEle : document.querySelector(".description"),
+  logoutBtn: document.querySelector(".logout"),
+  errorContainer: document.querySelector(".error-container"),
+  toast: document.getElementById("toast"),
+};
+const errorHandler = new ErrorHandler(elements.errorContainer, elements.toast);
+const LIMITS = {
+  MAX_QUESTIONS: 5,
+  MAX_ANSWERS: 5,
+  MAX_TOPIC_LENGTH: 30,
+  MAX_DESC_LENGTH: 100,
+  MAX_QUESTION_LENGTH: 100,
+  MAX_ANSWER_LENGTH: 100,
+  MIN_ANSWERS: 2,
+};
 
+let state = {
+  questionCounter: 0,
+  questionID: 0,
+  editMode: false,
+  quizToUpdate: null,
+};
 
-async function logout() {
-  const respone = await fetch(`${API_URL}/logout`, {
-    method: "GET",
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
+const generateQuestionHTML = (index, questionInput = "") => `
+    <div class="questionAndIcon">
+        <label for="">Question <span>${index + 1}</span></label>
+        <button><i class="fas fa-trash-alt delete"></i></button>
+    </div>
+    <div class="error-message" aria-live="polite"></div>
+    <input type="text" placeholder="Enter your question" maxlength="${
+      LIMITS.MAX_QUESTION_LENGTH
+    }" value="${questionInput}" />
+`;
 
-
-  });
-
-  const responeData = await respone.json();
-  console.log('logout',responeData);
-  
-  if (responeData.success === true) {
-    window.location.href = "login.html";
-  }
-
-}
-
-logoutBtn.addEventListener("click", logout);
-
-
-
-let addAnswerEle;
-let questionID = 1;
-let questionCounter = 0;
-let editMode = false;
-let toUpdateQuiz;
-  if (localStorage.getItem("quiz")) {
-    ({quiz: toUpdateQuiz} = JSON.parse(localStorage.getItem("quiz")));
-    editMode = true;
-    console.log(toUpdateQuiz);
-    
-    quizTopicInputEle.value = toUpdateQuiz.topic;
-    quizLevelSelectEle.value = toUpdateQuiz.level;
-    quizDescriptionTextAreaEle.value = toUpdateQuiz.description;
-  
-    toUpdateQuiz.questions.forEach((question,index) => {
-      let Question = questionContainer.appendChild(createNewQuestion(index,question.questionText ));
-      Question.setAttribute("data-type",question.questionType);
-      question.answers.forEach((answer) => {
-        Question.appendChild(createNewAnswer(question.questionType,Question,answer.answerText , answer.isCorrect ? "checked" : ""));
-      });
-      Question.appendChild(appendAddAnswerEle());
-    });
-    
-    questionCounter  = toUpdateQuiz.questions.length;
-
-    localStorage.removeItem("quiz");
-  }
-
-
-
-
-
-
-function appendAddAnswerEle() {
-  let addAnswerEle = document.createElement("div");
-  addAnswerEle.classList.add("add-answer");
-  addAnswerEle.innerHTML = ` 
-  <button><i class="fa-solid fa-square-plus"></i>Add answer</button>`;
-
-  return addAnswerEle;
-}
-
-AddQuestionBtnEle.addEventListener("click", function () {
-  if (questionCounter === 5) {
-    console.log("you reached the max limit");
-    AddBtnEle.disabled = true;
-    return;
-  }
-
-
-
-  const LastQuestion = questionContainer.appendChild(createNewQuestion(questionCounter));
-
-  let type;
-  if (questionTypeInputEle.value === "Single") {
-    type = "radio";
-  } else if (questionTypeInputEle.value === "Multiple") {
-    type = "checkbox";
-  } else {
-    type = "paragraph";
-    LastQuestion.setAttribute("data-type", type);
-    questionCounter++;
-    return;
-  }
-
-  LastQuestion.setAttribute("data-type", type);
-  LastQuestion.appendChild(createNewAnswer(type,LastQuestion));
-  LastQuestion.appendChild(createNewAnswer(type,LastQuestion));
-  LastQuestion.appendChild(appendAddAnswerEle());
-
-  questionCounter++;
-});
-
-questionContainer.addEventListener("click", function (event) {
-  if (event.target.closest(".add-answer button")) {
-    const currentEle = event.target.closest(".add-answer");
-    const parent = currentEle.parentElement;
-
-    const previousQuestionType = parent.getAttribute("data-type");
-    if (countNumberOfAnswers(parent) === 5) {
-      console.log("you reached the max limit");
-      
-      showError(parent.querySelector('input'), "A question can't have more than 20 options");
-      return;
-    }
-
-    let newChoiceEle;
-    if (previousQuestionType == "checkbox") {
-      newChoiceEle = createNewAnswer("checkbox",parent);
-    } else {
-      newChoiceEle = createNewAnswer("radio",parent);
-    }
-
-    parent.insertBefore(newChoiceEle, currentEle);
-  }
-});
-function countNumberOfAnswers(question) {
-  return question.querySelectorAll(".answer-option").length;
-}
-function createNewQuestion( index ,questionInput = '') {
-  const newQuestionEle = document.createElement("div");
-  newQuestionEle.classList.add("question");
-  newQuestionEle.classList.add("form-group");
-  newQuestionEle.id = `question-${index}`;
-  newQuestionEle.innerHTML = `
-  <div class="questionAndIcon">
-    <label for="">Question <span >${index + 1}</span></label>
-    <button><i class="fas fa-trash-alt delete"></i></button>
-  </div>
-  <input  type="text" placeholder="Enter your question" maxlength="100" />
- `;
-
- newQuestionEle.querySelector('input').value = questionInput;
-
-
-  newQuestionEle
-    .querySelector(".questionAndIcon")
-    .querySelector("button")
-    .addEventListener("click", function () {
-      newQuestionEle.remove();
-      questionCounter--;
-      let allQ = document.querySelector("#questions-container").querySelectorAll(".question ");                             
-
-      allQ.forEach(function (element, index) {
-        element.querySelector("span").textContent = index + 1;
-      });
-    });
-    questionID++;
-  return newQuestionEle;
-}
-function createNewAnswer(type,parent,answerInput = '',isChecked = '') {
-  console.log("parent",parent);
-  console.log("parent",parent.id);
-  const newChoiceEle = document.createElement("div");
-  newChoiceEle.classList.add("answer-option");
-  newChoiceEle.classList.add("form-group");
-  newChoiceEle.innerHTML = `
-  <div class="choice-wrapper">
-      <input type=${type} name="${parent.id}" id="answer1" ${isChecked} />  
-      <input type="text" class="answer-input" placeholder="Type your answer here" maxlength="100" />
-      <button class="delete-btn">
-      <i class="fas fa-trash-alt"></i>
+const generateAnswerHTML = (
+  type,
+  parentId,
+  answerInput = "",
+  isChecked = ""
+) => `
+    <div class="error-message" aria-live="polite"></div>
+    <div class="choice-wrapper">
+        <input type="${type}" name="${parentId}" id="answer1" ${isChecked} />  
+        <input type="text" class="answer-input" placeholder="Type your answer here" maxlength="${LIMITS.MAX_ANSWER_LENGTH}" value="${answerInput}" />
+        <button class="delete-btn">
+            <i class="fas fa-trash-alt"></i>
         </button>
-  </div>`;
+    </div>
+`;
 
-  newChoiceEle.querySelector(".answer-input").value = answerInput;
-  newChoiceEle.querySelector(".delete-btn").addEventListener("click", () => {
-    newChoiceEle.remove();
+const createNewQuestion = (index, questionInput = "") => {
+  const element = document.createElement("div");
+  element.classList.add("question", "form-group");
+  element.id = `question-${state.questionID}`;
+  element.innerHTML = generateQuestionHTML(index, questionInput);
 
+  const deleteBtn = element.querySelector(".delete").parentElement;
+  deleteBtn.addEventListener("click", () => {
+    element.remove();
+    state.questionCounter--;
+    updateQuestionNumbers();
+    clearError(elements.addQuestionBtn);
   });
 
-  return newChoiceEle;
-}
+  return element;
+};
 
-function anyUnasnwered(question) {
-  const type = question.getAttribute("data-type");
-  const errorPlace = question.querySelector("input");
-  if (type === "paragraph") {
-    return false;
-  } else if (type === "radio") {
-    const choices = question.querySelectorAll('input[type="radio"]');
-    let checked = false;
-    choices.forEach(function (choice) {
-      if (choice.checked) {
-        checked = true;
-      }
-    });
-    if (!checked) {
-      showError(errorPlace, "Please select an answer");
-      return true;
-    }
-  } else if (type === "checkbox") {
-    const choices = question.querySelectorAll('input[type="checkbox"]');
-    let checked = 0;
-    choices.forEach(function (choice) {
-      if (choice.checked) {
-        checked++;
-      }
-    });
-    if (checked < 2) {
-      showError(errorPlace, "A Multiple choice question must have two options at least");
-      return true;
-    }
-  }
+const createNewAnswer = (type, parent, answerInput = "", isChecked = "") => {
+  const element = document.createElement("div");
+  element.classList.add("answer-option", "form-group");
+  element.innerHTML = generateAnswerHTML(
+    type,
+    parent.id,
+    answerInput,
+    isChecked
+  );
 
-  return false;
-}
-
-function anyAnswerEmpty(question) {
-  let emptyCounter = 0;
-  if (question.getAttribute("data-type") === "paragraph") {
-    return false;
-  }
-  const answers = question.querySelectorAll(".answer-option");
-  
-  if (answers.length < 2) {
-    showError(question.querySelector("input"), "A question must have two options at least");
-    return true;
-  }
-  answers.forEach(function (oneAnswer) {
-    let notEmpty;
-    const answerInput = oneAnswer.querySelector(".answer-input");
-    notEmpty = CheckEmptyInput(answerInput);
-
-    if (!notEmpty) {
-      emptyCounter++;
-    }
+  const deleteBtn = element.querySelector(".delete-btn");
+  deleteBtn.addEventListener("click", () => {
+    element.remove();
+    clearError(parent.querySelector("input"));
   });
 
-  if (emptyCounter) {
-    showError(question.querySelector(".answer-option"), "Answers can't be empty");
-  } else {
-    clearError(question.querySelector(".answer-option"));
-  }
+  return element;
+};
 
-  return emptyCounter;
-}
-function checkQuestionEmpty(question) {
-  let emptyCounter = 0;
-  const questionInput = question.querySelector("input");
-  if (!CheckEmptyInput(questionInput)) {
-    showError(questionInput, "Question can't be empty");
-    emptyCounter++;
-  } else {
-    clearError(questionInput);
-  }
+const appendAddAnswerButton = () => {
+  const element = document.createElement("div");
+  element.classList.add("add-answer");
+  element.innerHTML =
+    '<button><i class="fa-solid fa-square-plus"></i>Add answer</button>';
+  return element;
+};
 
-  return emptyCounter;
-}
+const validators = {
+  input: (input, maxLength) => {
 
-function checkLongQuestion(question) {
-  const questionInput = question.querySelector("input");
-  if (!CheckInputLength(questionInput, 100)) {
-    showError(questionInput, "Question can't be more than 100 characters");
-    return true;
-  } else {
-    clearError(questionInput);
-    return false;
-  }
-}
+    const value = input.value.trim();
+    return {
+      isEmpty: value === "",
+      isTooLong: value.length > maxLength,
+    };
+  },
 
-function checkLongAnswer(question) {
-  const answers = question.querySelectorAll(".answer-option");
-  answers.forEach(function (oneAnswer) {
-    const answerInput = oneAnswer.querySelector(".answer-input");
+  question: (question) => {
+    const type = question.getAttribute("data-type");
+    const answers = question.querySelectorAll(".answer-option");
+    const questionInput = question.querySelector("input")
     
-    if (!CheckInputLength(answerInput, 100)) {
-      showError(question.querySelector("input"), "Answer can't be more than 100 characters");
-      return true;
-    } else {
-      clearError(question.querySelector("input"));
+    if (type === "paragraph") return true;
+
+   
+    
+    const questionValidation = validators.input(questionInput, LIMITS.MAX_QUESTION_LENGTH);
+    if (questionValidation.isEmpty || questionValidation.isTooLong) {
+      showError(
+        question,
+        questionValidation.isEmpty
+          ? "Question can't be empty"
+          : `Question can't be more than ${LIMITS.MAX_QUESTION_LENGTH} characters`
+      );
       return false;
     }
-  });
-}
 
-function CheckInputLength(input,allowedLength){ 
+    answers.forEach((answer)=>{
+      const answerInput = answer.querySelector('input[type="text"]');
 
-  if (input.value.length > allowedLength){
-    return false;
-  }
-  else{
+      const answerValidation = validators.input(answerInput,LIMITS.MAX_ANSWER_LENGTH);
+      if (answerValidation.isEmpty || answerValidation.isTooLong) {
+        console.log("hi");
+
+        showError(
+          answer,
+          answerValidation.isEmpty
+            ? "Answer can't be empty"
+            : `Answer can't be more than ${LIMITS.MAX_ANSWER_LENGTH} characters`
+        );
+      
+    }})
+    if (answers.length < LIMITS.MIN_ANSWERS) {
+      showError(
+        question,
+        `A question must have at least ${LIMITS.MIN_ANSWERS} options`
+      );
+      return false;
+    }
+
+    const checkedAnswers = question.querySelectorAll(
+      `input[type=${type}]:checked`
+    ).length;
+    if (type === "radio" && checkedAnswers === 0) {
+      showError(question, "Please select an answer");
+      return false;
+    }
+    if (type === "checkbox" && checkedAnswers < 2) {
+      showError(
+        question,
+        "A Multiple choice question must have two options at least"
+      );
+      return false;
+    }
+
     return true;
+  },
+};
+
+const handleAddQuestion = () => {
+  if (state.questionCounter >= LIMITS.MAX_QUESTIONS) {
+    errorHandler.showToast("Maximum questions limit reached", true);
+    return;
   }
 
-}
+  // clearError(elements.addQuestionBtn);
+  const question = createNewQuestion(state.questionCounter);
+  elements.questionsContainer.appendChild(question);
 
-saveBtnEle.addEventListener("click", function () {
-  const allQuestions = questionContainer.querySelectorAll(".question");
-  let validData = true;
-  if (!CheckEmptyInput(quizTopicInputEle)) {
-    showError(quizTopicInputEle, "Topic can't be empty");
-    validData = false;
-  }
-  else if (!CheckInputLength(quizTopicInputEle,30)) {
-    showError(quizTopicInputEle, "Topic can't be more than 30 characters");
-  }
-  else {
-    clearError(quizTopicInputEle);
-  }
-
-
-  if (!CheckEmptyInput(quizDescriptionTextAreaEle)) {
-    showError(quizDescriptionTextAreaEle, "Description can't be empty");
-    validData = false;
-  }
-  else if (!CheckInputLength(quizDescriptionTextAreaEle,100)) {
-    showError(quizDescriptionTextAreaEle, "Description can't be more than 200 characters");
-  }
-  else {
-    clearError(quizDescriptionTextAreaEle);
+  const type = elements.questionType.value.toLowerCase();
+  if (type !== "paragraph") {
+    question.setAttribute(
+      "data-type",
+      type === "single" ? "radio" : "checkbox"
+    );
+    question.appendChild(
+      createNewAnswer(type === "single" ? "radio" : "checkbox", question)
+    );
+    question.appendChild(
+      createNewAnswer(type === "single" ? "radio" : "checkbox", question)
+    );
+    question.appendChild(appendAddAnswerButton());
+  } else {
+    question.setAttribute("data-type", "paragraph");
   }
 
+  state.questionCounter++;
+  state.questionID++;
+};
 
-  allQuestions.forEach(function (question) {
-    if (checkQuestionEmpty(question)) {
-      validData = false;
-      return;
+const handleAddAnswer = (event) => {
+  const addButton = event.target.closest(".add-answer button");
+  if (!addButton) return;
+
+  const question = addButton.closest(".question");
+  if (countAnswers(question) >= LIMITS.MAX_ANSWERS) {
+    errorHandler.showToast(
+      `Maximum ${LIMITS.MAX_ANSWERS} answers allowed`,
+      true
+    );
+    return;
+  }
+
+  const type = question.getAttribute("data-type");
+  const newAnswer = createNewAnswer(type, question);
+  question.insertBefore(newAnswer, addButton.parentElement);
+  clearError(question.querySelector("input"));
+};
+
+const handleSave = async () => {
+  try {
+    if (!validateForm()) return;
+
+    const quizData = collectData();
+    const endpoint = state.editMode
+      ? `/updateQuiz/${state.quizToUpdate.id}`
+      : "/addQuiz";
+    const method = state.editMode ? "PUT" : "POST";
+
+    const response = await makeRequest(endpoint, method, quizData);
+    if (response.success) {
+      errorHandler.showToast("Quiz saved successfully!", false);
+      setTimeout(
+        () => (window.location.href = "admin.html"),
+        CONFIG.TOAST_DURATION
+      );
     }
-    else if (checkLongQuestion(question)) {
-      validData = false;
-      return;
-    }
+  } catch (error) {
+    errorHandler.showToast(error.message || "Failed to save quiz", true);
+  }
+};
 
-    if (anyAnswerEmpty(question)) {
-      console.log("hi1");
-      
-      validData = false;
-      return;
-    }
-    else if (checkLongAnswer(question)) {
-      console.log("hi2");
-      validData = false;
-      return;
-    }
+const updateQuestionNumbers = () => {
+  elements.questionsContainer
+    .querySelectorAll(".question")
+    .forEach((q, idx) => {
+      q.querySelector("span").textContent = idx + 1;
+    });
+};
 
-    if (anyUnasnwered(question)) {
-      validData = false;
-      return;
-    }
-  });
+const countAnswers = (question) =>
+  question.querySelectorAll(".answer-option").length;
 
-  if (validData) {
-    const quiz = collectData();
-    const response = sendQuiz(quiz).then((data) => {
-      if (data.success === true) {
-        window.location.href = "admin.html";
-      } else {
-      
-        // ! handel error 
-      
+const validateForm = () => {
+  let isValid = true;
+  errorHandler.clearError();
+  clearError()
+
+
+
+  const topicValidation = validators.input(
+    elements.quizTopicInput,
+    LIMITS.MAX_TOPIC_LENGTH
+  );
+  const descValidation = validators.input(
+    elements.quizDescription,
+    LIMITS.MAX_DESC_LENGTH
+  );
+
+  if (topicValidation.isEmpty || topicValidation.isTooLong) {
+    
+    showError(
+      elements.quizTopicEle,
+      topicValidation.isEmpty
+        ? "Topic can't be empty"
+        : `Topic can't be more than ${LIMITS.MAX_TOPIC_LENGTH} characters`
+    );
+    isValid = false;
+  }
+
+  if (descValidation.isEmpty || descValidation.isTooLong) {
+    showError(
+      elements.quizDescriptionEle,
+      descValidation.isEmpty
+        ? "Description can't be empty"
+        : `Description can't be more than ${LIMITS.MAX_DESC_LENGTH} characters`
+    );
+    isValid = false;
+  }
+
+  if (state.questionCounter === 0) {
+    errorHandler.showToast("Please add at least one question");
+    isValid = false;
+  }
+
+  elements.questionsContainer
+    .querySelectorAll(".question")
+    .forEach((question) => {
+      if (!validators.question(question)) {
+        isValid = false;
       }
     });
-    
-    
-  }
+
+  return isValid;
+};
+
+const collectData = () => ({
+  topic: elements.quizTopicInput.value,
+  level: elements.quizLevel.value,
+  description: elements.quizDescription.value,
+  questions: Array.from(
+    elements.questionsContainer.querySelectorAll(".question")
+  ).map((question) => ({
+    questionText: question.querySelector("input").value,
+    questionType: question.getAttribute("data-type"),
+    answers: Array.from(question.querySelectorAll(".answer-option")).map(
+      (answer) => ({
+        answerText: answer.querySelector(".answer-input").value,
+        isCorrect: answer.querySelector(
+          `input[type=${question.getAttribute("data-type")}]`
+        ).checked,
+      })
+    ),
+  })),
 });
 
-async function sendQuiz(quiz){
-  let response;
-  if(editMode){
-    console.log("hi",toUpdateQuiz.id);
-   
-    response = await fetch(`${API_URL}/updateQuiz/${toUpdateQuiz.id}`, {
-      method: "PUT",
-      credentials: "include",
-      body: JSON.stringify(quiz),
-      headers: {
-          "Content-Type": "application/json"
-      }
-  
-      
-    });
-  }
-  else
-  {
-    response = await fetch(`${API_URL}/addQuiz`, {
-      method: "POST",
-      credentials: "include",
-      body: JSON.stringify(quiz),
-      headers: {
-          "Content-Type": "application/json"
-      }
-  
-      
-    });
-  }
-  
+const loadExistingQuiz = (quiz) => {
+  elements.quizTopicInput.value = quiz.topic;
+  elements.quizLevel.value = quiz.level;
+  elements.quizDescription.value = quiz.description;
 
-  let responseData = await response.json();
-  return responseData;
-}
+  quiz.questions.forEach((question, index) => {
+    const questionElement = createNewQuestion(index, question.questionText);
+    questionElement.setAttribute("data-type", question.questionType);
 
-function collectData() {
-  const quizTopic = quizTopicInputEle.value;
-  const quizLevel = quizLevelSelectEle.value;
-  const quizDescription = quizDescriptionTextAreaEle.value;
-  const questions = [];
-  const allQuestions = questionContainer.querySelectorAll(".question");
-  allQuestions.forEach(function (question) {
-    const questionText = question.querySelector("input").value;
-    const questionType = question.getAttribute("data-type");
-    const answers = [];
-    question.querySelectorAll(".answer-option").forEach(function (answer) {
-      const answerText = answer.querySelector(".answer-input").value;
-      const isCorrect = answer.querySelector(`input[type=${questionType}]`).checked;
-      answers.push({ answerText, isCorrect });
+    question.answers.forEach((answer) => {
+      questionElement.appendChild(
+        createNewAnswer(
+          question.questionType,
+          questionElement,
+          answer.answerText,
+          answer.isCorrect ? "checked" : ""
+        )
+      );
     });
-    questions.push({ questionText, questionType, answers });
+
+    if (question.questionType !== "paragraph") {
+      questionElement.appendChild(appendAddAnswerButton());
+    }
+
+    elements.questionsContainer.appendChild(questionElement);
   });
 
-  const quiz = { topic: quizTopic, level: quizLevel, description: quizDescription, questions };
-  console.log(quiz);
+  state.questionCounter = quiz.questions.length;
+};
 
-  return quiz;
-}
+const init = () => {
+  if (!checkAuth()) return;
 
-function CheckEmptyInput(questionInput) {
-  if (questionInput.value.trim() === "") {
-    return false;
-  } else {
-    return true;
+  elements.addQuestionBtn.addEventListener("click", handleAddQuestion);
+  elements.saveBtn.addEventListener("click", handleSave);
+  elements.logoutBtn.addEventListener("click", () =>
+    handleLogout(makeRequest, true)
+  );
+  elements.questionsContainer.addEventListener("click", handleAddAnswer);
+
+  const savedQuiz = localStorage.getItem("quiz");
+  if (savedQuiz) {
+    try {
+      state.editMode = true;
+      state.quizToUpdate = JSON.parse(savedQuiz).quiz;
+      loadExistingQuiz(state.quizToUpdate);
+      localStorage.removeItem("quiz");
+    } catch (error) {
+      errorHandler.showToast("Failed to load quiz", true);
+      window.location.href = "admin.html";
+    }
   }
-}
+};
 
-function showError(inputElement, message) {
-  // Check if an error message already exists
-  let errorElement = inputElement.parentElement.querySelector(".error-message");
-  if (!errorElement) {
-    // Create a new error message element
-    errorElement = document.createElement("div");
-    errorElement.className = "error-message";
-    errorElement.textContent = message;
-    // Insert the error message just above the input
-    inputElement.parentElement.insertBefore(errorElement, inputElement);
-  } else {
-    // Update the existing error message
-    errorElement.textContent = message;
-  }
-
-  // Add a class to highlight the invalid input (optional)
-  inputElement.classList.add("invalid-input");
-}
-
-
-
-function clearError(inputElement) {
-  const errorElement = inputElement.parentElement.querySelector(".error-message");
-  if (errorElement) {
-    errorElement.remove(); // Remove the error message
-  }
-
-  // Remove the invalid input class (optional)
-  inputElement.classList.remove("invalid-input");
-}
-
-
+document.addEventListener("DOMContentLoaded", init);

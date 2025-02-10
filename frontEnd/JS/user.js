@@ -45,7 +45,10 @@ const addQuizCard = (quizData, score) => {
     if (!newCard) return;
 
     const startBtn = newCard.querySelector(SELECTORS.START_BTN);
+    
     startBtn?.addEventListener("click", () => handleStartQuiz(id));
+        
+   
 };
 
 const createTopicFilter = (topics) => {
