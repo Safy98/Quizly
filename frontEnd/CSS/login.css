@@ -171,7 +171,7 @@ form {
   padding: 12px 24px;
   border-radius: 4px;
   font-size: 16px;
-  z-index: 1000;
+  z-index: 1;
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s, visibility 0.3s;
@@ -188,4 +188,19 @@ form {
 }
 .bg-Success{
   background-color: rgba(4, 185, 79, 0.8);
+}
+
+.passIcon{
+  position: absolute;
+   top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: black;
+
+}
+
+.password-filed{
+
+  position: relative;
 }

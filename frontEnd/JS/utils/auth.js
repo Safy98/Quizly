@@ -101,23 +101,25 @@ export async function makeRequest(endpoint, method, data) {
             body: JSON.stringify(data),
             signal: controller.signal
         }).finally(() => clearTimeout(timeoutId));
-
         const responseData = await response.json();
         
         if (!response.ok) {
-            throw new Error(response.status)
+                        
+            throw new Error(`${responseData.message}`);
             
         }
 
         return responseData;
     } catch (error) {
+        // console.log(error.message);
         
-        if (error.message == 400)
-            throw new Error(CONFIG.ERROR_MESSAGES.EMAIL_EXISTS);
-        else if (error.message == 401) 
-            throw new Error(CONFIG.ERROR_MESSAGES.AUTH_FAILED);
-        else
-            throw new Error(CONFIG.ERROR_MESSAGES.SERVER_ERROR);
+        throw error;
+        // if (error.message == 400)
+        //     throw new Error(CONFIG.ERROR_MESSAGES.EMAIL_EXISTS);
+        // else if (error.message == 401) 
+        //     throw new Error(CONFIG.ERROR_MESSAGES.AUTH_FAILED);
+        // else
+        //     throw new Error(CONFIG.ERROR_MESSAGES.SERVER_ERROR);
 
         
     }

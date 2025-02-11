@@ -17,6 +17,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
   
   <link rel="stylesheet" href="CSS/login.css" />
+  <link rel="stylesheet" href="CSS/all.min.css">
 
  <!-- Auth Check Script - Execute immediately -->
   <script src="JS/utils/isLogged.js"></script>
@@ -55,8 +56,10 @@
             <label for="password">Password</label>
           </div>
           <div class="password-error-message error-message" aria-live="polite"></div>
-          <div>
+          <div class="password-filed">
             <input type="password" id="password" name="password" required maxlength="40" />
+            
+            <div class="passIcon"><i class="fa-solid fa-lock"></i></div>
           </div>
         </div>
         <div>

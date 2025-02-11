@@ -12,7 +12,28 @@ const elements = {
     emailErrorContainer: document.querySelector(".email-error-message"),
     passwordErrorContainer: document.querySelector(".password-error-message"),
     confPassErrorContainer: document.querySelector(".confirmPassword-error-message"),
+    lockPassIcon1: document.querySelector(".passIcon.passIcon-1"),
+    lockPassIcon2: document.querySelector(".passIcon.passIcon-2"),
+
 };
+console.log(elements.lockPassIcon1);
+console.log(elements.lockPassIcon2);
+
+
+
+elements.lockPassIcon1.addEventListener("click", () => {
+    elements.password.type = elements.password.type === "password" ? "text" : "password";
+    elements.lockPassIcon1.querySelector('i').classList.toggle("fa-lock");
+    elements.lockPassIcon1.querySelector('i').classList.toggle("fa-unlock");
+});
+elements.lockPassIcon2.addEventListener("click", () => {
+    elements.confirmPassword.type = elements.confirmPassword.type === "password" ? "text" : "password";
+    elements.lockPassIcon2.querySelector('i').classList.toggle("fa-lock");
+    elements.lockPassIcon2.querySelector('i').classList.toggle("fa-unlock");
+});
+
+
+
 
 const generalErrorHandler = new ErrorHandler(null, elements.toast);
 const nameErrorHandler = new ErrorHandler(elements.nameErrorContainer,null);
@@ -23,10 +44,7 @@ const confPasswordErrorHandler = new ErrorHandler(elements.confPassErrorContaine
 async function handleSubmit(event) {
     event.preventDefault();
 
-    console.log(elements.confPassErrorContainer);
-    console.log(elements.nameErrorContainer);
-    console.log(elements.emailErrorContainer);
-    console.log(elements.confPassErrorContainer);
+   
     generalErrorHandler.clearError();
     nameErrorHandler.clearError();
     emailErrorHandler.clearError();

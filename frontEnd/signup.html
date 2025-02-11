@@ -16,7 +16,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="CSS/signup.css" />
-
+    <link rel="stylesheet" href="CSS/all.min.css">
     <!-- Auth Check Script - Execute immediately -->
   <script src="JS/utils/isLogged.js"></script>
 
@@ -79,7 +79,7 @@
               </div>
               <div class="error-message password-error-message" aria-live="polite"></div>
 
-              <div>
+              <div class="password-filed">
                 <input 
                     type="password" 
                     id="password" 
@@ -89,7 +89,9 @@
                     autocomplete="new-password"
                     aria-label="Password"
                 />
+                <div class="passIcon passIcon-1"><i class="fa-solid fa-lock"></i></div>
               </div>
+
           </div>
           <div class="confirm-password-input">
             <div>
@@ -97,7 +99,7 @@
               </div>
               <div class="error-message confirmPassword-error-message" aria-live="polite"></div>
 
-              <div>
+              <div class="password-filed">
                 <input 
                     type="password" 
                     id="confirm-password" 
@@ -107,7 +109,10 @@
                     autocomplete="new-password"
                     aria-label="Confirm password"
                 />
+                <div class="passIcon passIcon-2 "><i class="fa-solid fa-lock"></i></div>
               </div>
+              
+
           </div>
           <div>
             <button type="submit" aria-label="Sign up">Sign up</button>

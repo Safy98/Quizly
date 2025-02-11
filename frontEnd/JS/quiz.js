@@ -24,7 +24,7 @@ const errorHandler = new ErrorHandler(elements.errorContainer, elements.toast);
 // }
 
 let score = 0;
-
+let questionCounter = 0;
 let correctAnswers = [];
 let answers;
 let question;
@@ -34,16 +34,13 @@ const init = async () => {
   quizid = localStorage.getItem("quizid");
   try {
     const response = await makeRequest(`/startQuiz/${quizid}`, "POST");
-    console.log(response);
     
     if (response.success) {
       if (response.completed) {
-        console.log('hi1');
         
         finishQuiz();
             
       } else {
-        console.log('hi');
         
         ({ question } = response);
         answers = question.answers;
@@ -65,9 +62,10 @@ const init = async () => {
 
         showQuestion();
       }
-    } else {
-      throw new Error(response.message);
-    }
+    } 
+    // else {
+    //   throw new Error(response.message);
+    // }
   } catch (error) {
     elements.quizContainer.innerHTML = "";
     errorHandler.showToast(error.message);
@@ -80,10 +78,12 @@ document.addEventListener("DOMContentLoaded", init);
 function showResult() {
   elements.quizContainer.innerHTML = ``;
   const element = document.createElement("div");
-  element.classList.add("finish");
+  element.classList.add("result-container");
   element.innerHTML = `
- <h2>Finished</h2>
- <h3>Score: ${score} </h3>
+ <p class = 'congrats' >Congratulations!</p>
+        <p>You've completed the quiz!</p>
+        <p class="score">Your Score: <span id="userScore">${score}/${questionCounter}</span></p>
+        <a href="user.html" class="button">Return to home page</a>
  `;
   elements.quizContainer.appendChild(element);
 }
@@ -113,8 +113,6 @@ async function getNextQuestion() {
         elements.finishBtn.disabled = false;
       } else {
         ({ question } = response);
-        console.log(response);
-
         answers = question.answers;
       }
     }
@@ -197,6 +195,7 @@ function checkAnswer() {
 }
 
 function showQuestion() {
+  questionCounter++;
   const questionNumber = question.questionNumber;
   const questionsleft = question.questionsleft;
   elements.questionNumber.textContent = `${questionNumber}`;

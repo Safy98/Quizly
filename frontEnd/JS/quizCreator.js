@@ -141,7 +141,6 @@ const validators = {
 
       const answerValidation = validators.input(answerInput,LIMITS.MAX_ANSWER_LENGTH);
       if (answerValidation.isEmpty || answerValidation.isTooLong) {
-        console.log("hi");
 
         showError(
           answer,

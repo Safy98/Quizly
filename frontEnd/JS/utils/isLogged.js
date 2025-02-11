@@ -22,10 +22,6 @@
         } else if (localStorage.getItem("name")) {
           window.location.href = "user.html";
         } else {
-        //   if (currentUrl !== "http://127.0.0.1:5500/login.html") {
-        //       if (currentUrl !== "http://127.0.0.1:5500/signup.html"){
-        //           window.location.href = "login.html";
-        //       }
            
           }
     }

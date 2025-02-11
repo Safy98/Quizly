@@ -393,9 +393,10 @@ body{
     font-size: 1rem;
 }
 .quiz-space{
-    width: 90%;
+    width: 80%;
+    margin: auto;
     background-color: rgba(75, 85, 99, 0.2);
-    padding: 50px 50px;
+    padding: 30px 50px;
     border-radius: 5px;
     position: relative;
 }
@@ -546,4 +547,48 @@ input[type="checkbox"] {
     color: red;
     font-size: 16px;
     margin-top: 5px;
+}
+
+.result-container .congrats{
+    font-size: 40px;
+    color: var(--primary-color);
+    margin-bottom: 1.875rem;
+}
+.result-container p {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+}
+.result-container {
+    text-align: center;
+    /* width: 1000%; */
+    /* background: #ffffff; */
+    padding: 0px 60px;
+    /* position: absolute; */
+    /* top: 50%; */
+    /* width: 70%; */
+    /* margin: auto; */
+    /* left: 50%; */
+    /* transform: translate(-50%,-50%); */
+    /* border-radius: 50%; */
+    /* overflow: hidden; */
+    /* box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); */
+}
+/*  */
+.score {
+    font-size: 2rem;
+    color: #4caf50;
+    font-weight: bold;
+}
+.result-container .button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: var(--primary-color);
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+.result-container .button:hover {
+    background-color: var(--btn-hover);
 }

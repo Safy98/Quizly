@@ -1,4 +1,4 @@
-import { CONFIG, makeRequest } from './utils/auth.js';
+import { CONFIG, makeRequest ,ErrorHandler } from './utils/auth.js';
 import { createCard, handleFilter, handleLogout } from './utils/shared.js';
 
 // DOM Elements
@@ -19,6 +19,7 @@ const SELECTORS = {
     DELETE_BTN: ".delete",
     EDIT_BTN: ".edit",
 };
+const errorHanlder = new ErrorHandler(null, elements.toast);
 
 // Event Handlers
 const handleDelete = async (id) => {
@@ -28,7 +29,7 @@ const handleDelete = async (id) => {
             window.location.reload();
         }
     } catch (error) {
-        console.error('Delete failed:', error);
+        errorHanlder.showToast('Delete failed:', error.message);
     }
 };
 
@@ -38,7 +39,7 @@ const handleEdit = async (id) => {
         localStorage.setItem("quiz", JSON.stringify(response));
         window.location.href = "quizCreator.html";
     } catch (error) {
-        console.error('Edit failed:', error);
+        errorHanlder.showToast('Edit failed:', error);
     }
 };
 
@@ -104,7 +105,6 @@ const init = async () => {
         const data = await makeRequest('/getQuizes', 'GET');
         window.quizzesData = data; // Store for filter usage
 
-        console.log(data);
         
          // Create topic filters
          const topics = ['All', ...new Set(
@@ -121,7 +121,7 @@ const init = async () => {
 
 
     } catch (error) {
-        console.error('Initialization failed:', error);
+        errorHanlder.showToast('Initialization failed:', error.message);
     }
 };
 

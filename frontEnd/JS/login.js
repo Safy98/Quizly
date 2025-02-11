@@ -8,12 +8,23 @@ const elements = {
   toast: document.getElementById("toast"),
   passwordErrorContainer: document.querySelector(".password-error-message"),
   emailErrorContainer: document.querySelector(".email-error-message"),
+  lockPassIcon: document.querySelector(".passIcon"),
 
 };
 const generalErrorHandler = new ErrorHandler(null, elements.toast);
 const emailErrorHandler = new ErrorHandler(elements.emailErrorContainer, elements.toast);
 const passwordErrorHandler = new ErrorHandler(elements.passwordErrorContainer, elements.toast);
 
+/**
+ * Handles the login form submission.
+ * 
+ * Prevents the default form submission.
+ * Checks if the email and password are valid.
+ * If the input is invalid, it shows an error message and focuses on the invalid input.
+ * If the input is valid, it makes a POST request to the /login endpoint.
+ * If the login is successful, it redirects the user to user.html or admin.html based on the user's role.
+ * If the login fails, it shows an error message and focuses on the password input.
+ */
 async function handleSubmit(event) {
   event.preventDefault();
   emailErrorHandler.clearError();
@@ -67,13 +78,9 @@ async function handleSubmit(event) {
 // Event listeners
 elements.form.addEventListener("submit", handleSubmit);
 
-// elements.email.addEventListener(
-//   "input",
-//   debounce(() => {
-//     if (elements.email.value && !validators.email(elements.email.value.trim())) {
-//       errorHandler.showError("Please enter a valid email address");
-//     } else {
-//       errorHandler.clearError();
-//     }
-//   }, 500)
-// );
+
+elements.lockPassIcon.addEventListener("click", () => {
+    elements.password.type = elements.password.type === "password" ? "text" : "password";
+    elements.lockPassIcon.querySelector('i').classList.toggle("fa-lock");
+    elements.lockPassIcon.querySelector('i').classList.toggle("fa-unlock");
+})
