@@ -179,7 +179,7 @@
     transition: opacity 0.3s, visibility 0.3s;
     box-shadow: 0 3px 6px rgba(0,0,0,0.16);
   }
-  
+
   .toast.show {
     opacity: 1;
     visibility: visible;

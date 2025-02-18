@@ -23,8 +23,8 @@ const LIMITS = {
   MAX_ANSWERS: 5,
   MAX_TOPIC_LENGTH: 30,
   MAX_DESC_LENGTH: 100,
-  MAX_QUESTION_LENGTH: 100,
-  MAX_ANSWER_LENGTH: 100,
+  MAX_QUESTION_LENGTH: 500,
+  MAX_ANSWER_LENGTH: 500,
   MIN_ANSWERS: 2,
 };
 
@@ -120,7 +120,7 @@ const validators = {
     const type = question.getAttribute("data-type");
     const answers = question.querySelectorAll(".answer-option");
     const questionInput = question.querySelector("input")
-    
+    let isValid = true;
     if (type === "paragraph") return true;
 
    
@@ -148,6 +148,7 @@ const validators = {
             ? "Answer can't be empty"
             : `Answer can't be more than ${LIMITS.MAX_ANSWER_LENGTH} characters`
         );
+        isValid =  false;
       
     }})
     if (answers.length < LIMITS.MIN_ANSWERS) {
@@ -172,6 +173,8 @@ const validators = {
       );
       return false;
     }
+
+    if (!isValid) return false;
 
     return true;
   },
@@ -246,6 +249,8 @@ const handleSave = async () => {
       );
     }
   } catch (error) {
+    console.error(error);
+    
     errorHandler.showToast(error.message || "Failed to save quiz", true);
   }
 };

@@ -34,14 +34,11 @@ const init = async () => {
   quizid = localStorage.getItem("quizid");
   try {
     const response = await makeRequest(`/startQuiz/${quizid}`, "POST");
-    
+
     if (response.success) {
       if (response.completed) {
-        
         finishQuiz();
-            
       } else {
-        
         ({ question } = response);
         answers = question.answers;
         elements.quizTopic.textContent = response.topic;
@@ -62,7 +59,7 @@ const init = async () => {
 
         showQuestion();
       }
-    } 
+    }
     // else {
     //   throw new Error(response.message);
     // }
@@ -172,7 +169,7 @@ function checkAnswer() {
     if (correctAnswers.includes(choice.textContent)) {
       choice.style.borderColor = "#0d9488";
       if (type === "radio") {
-        break;
+        continue;
       }
     } else if (
       !correctAnswers.includes(choice.textContent) &&
@@ -181,11 +178,17 @@ function checkAnswer() {
       choice.style.borderColor = "#DC3545";
       isQuestionCorrect = false;
     }
+
+    if (correctAnswers.length !== choosedLables.length) {
+      isQuestionCorrect = false;
+    }
   }
 
   if (isQuestionCorrect) {
     score++;
   }
+
+  correctAnswers.length = 0;
 
   elements.nextBtn.disabled = false;
   elements.submitBtn.disabled = true;
@@ -231,8 +234,6 @@ function showQuestion() {
       elements.questionArea.appendChild(answerOption);
     });
   }
-
-  
 
   elements.nextBtn.disabled = true;
   elements.submitBtn.disabled = false;

@@ -24,7 +24,7 @@ class QuestionSchema(Schema):
 
 class QuizSchema(Schema):
     topic = fields.Str(required=True, validate=validate.Length(min=1, max=30))
-    level = fields.Str(required=True, validate=validate.OneOf(['Beginner', 'Intermediate', 'Advanced', 'Challenging']))
+    level = fields.Str(required=True, validate=validate.OneOf(['Beginner', 'Intermediate', 'Hard', 'Challenging']))
     description = fields.Str(required=True, validate=validate.Length(max=100))
     questions = fields.List(fields.Nested(QuestionSchema), required=True, validate=validate.Length(min=1))
 
@@ -487,7 +487,7 @@ def nextQuestion():
         quiz = Quiz.query.get_or_404(quiz_id)
 
         # Update the total score in the session
-        quiz_score += score
+        quiz_score = score
 
         # Increment the question counter for the next question
         question_counter += 1

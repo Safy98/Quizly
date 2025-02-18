@@ -9,5 +9,4 @@ class Config:
     CORS_ORIGINS = "http://127.0.0.1:5500"
     SESSION_COOKIE_SAMESITE = "None"
     CORS_HEADERS = 'Content-Type'
-
     SESSION_COOKIE_SECURE = True
