@@ -1,86 +1,164 @@
-# MY FINAL PROJECT
+# Quizly - Interactive Quiz Platform
 
-A web application that allows users to take quizzes, view their scores, and manage quizzes through an intuitive interface.
+Quizly is a modern web application that allows users to create, manage, and participate in quizzes. With a clean user interface and robust backend, it provides an engaging platform for both quiz administrators and participants.
 
-- What does it do?  
-  Quizly is a Flask-based web application where users can register, log in, take quizzes, and view their results. Admins can create, update, or delete quizzes and questions.
-- What is the "new feature" which you have implemented that
-  we haven't seen before?\
+## Features
 
-  - using SQLAlchemy as ORM for SQlite database
-  - using decorators
-  - using schema for validation
-  - Blueprint
+### User Features
 
-## Prerequisites
+- User authentication (login/signup)
+- Take quizzes with different difficulty levels
+- Real-time score tracking
+- Progress tracking for each quiz
+- Multiple question types support (radio, checkbox)
 
-Did you add any additional modules that someone needs to
-install (for instance anything in Python that you `pip 
-install-ed`)?
+### Admin Features
 
-To run this project locally, you need to install the following Python modules:
+- Create and manage quizzes
+- Add multiple types of questions
+- Delete existing quizzes
 
-- Flask
-- Flask-SQLAlchemy
-- Flask-Login
-- Flask-Limiter
-- Flask-Marshmallow
+## Tech Stack
 
-```bash
-pip install -r requirements.txt
+### Backend
+
+- Flask (Python web framework)
+- SQLAlchemy (ORM)
+- Flask-CORS (Cross-Origin Resource Sharing)
+- Flask-Limiter (Rate limiting)
+- Marshmallow (Object serialization/deserialization)
+
+### Database
+
+- SQLite (local development)
+
+### Frontend
+
+- Vanilla JavaScript
+- HTML5
+- CSS3
+- Font Awesome (Icons)
+
+## Installation
+
+### Backend Setup
+
+1. Navigate to the backend directory:
+
+   ```bash
+   cd backEnd
+   ```
+
+2. Create a virtual environment:
+
+   ```bash
+   python -m venv venv
+   ```
+
+3. Activate the virtual environment:
+
+   - Windows:
+     ```bash
+     .\venv\Scripts\activate
+     ```
+   - Unix/MacOS:
+     ```bash
+     source venv/bin/activate
+     ```
+
+4. Install dependencies:
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+5. Run the application:
+   ```bash
+   python run.py
+   ```
+
+### Frontend Setup
+
+1. Navigate to the frontend directory:
+
+   ```bash
+   cd frontEnd
+   ```
+
+2. Open the application in a web browser:
+   - Open `login.html` to start using the application
+   - For development, use a local server to serve the frontend files
+
+## Project Structure
+
+```
+├── backEnd/
+│   ├── app/
+│   │   ├── models/
+│   │   ├── routes/
+│   │   ├── __init__.py
+│   │   ├── config.py
+│   │   └── extensions.py
+│   ├── instance/
+│   ├── requirements.txt
+│   └── run.py
+├── frontEnd/
+│   ├── CSS/
+│   ├── Images/
+│   ├── JS/
+│   │   └── utils/
+│   ├── admin.html
+│   ├── login.html
+│   ├── quiz.html
+│   ├── quizCreator.html
+│   ├── signup.html
+│   └── user.html
+└── README.md
 ```
 
-## Project Checklist
+## API Documentation
 
-- [✅] It is available on GitHub.
-- [✅] It uses the Flask web framework.
-- [✅] It uses at least one module from the Python Standard
-  Library other than the random module.
-  Please provide the name of the module you are using in your
-  app.
-  - Module name: datetime
-- [✅] It contains at least one class written by you that has
-  both properties and methods. It uses `__init__()` to let the
-  class initialize the object's attributes (note that  
-  `__init__()` doesn't count as a method). This includes
-  instantiating the class and using the methods in your app.
-  Please provide below the file name and the line number(s) of
-  at least one example of a class definition in your code as
-  well as the names of two properties and two methods.
-  - File name for the class definition: app/models/user.py
-  - Line number(s) for the class definition: 14
-  - Name of two properties: id , name
-  - Name of two methods: set_password , check_password
-  - File name and line numbers where the methods are used:
-- [✅] It makes use of JavaScript in the front end and uses the
-  localStorage of the web browser.
-- [✅] It uses modern JavaScript (for example, let and const
-  rather than var).
-- [✅] It makes use of the reading and writing to the same file
-  feature.
-- [✅] It contains conditional statements. Please provide below
-  the file name and the line number(s) of at least
-  one example of a conditional statement in your code.
-  - File name: frontend/JS/login.js
-  - Line number(s): 37
-- [✅] It contains loops. Please provide below the file name
-  and the line number(s) of at least
-  one example of a loop in your code.
-  - File name: frontend/JS/user.js
-  - Line number(s): 47
-- [✅] It lets the user enter a value in a text box at some
-  point.
-  This value is received and processed by your back end
-  Python code.
-- [✅] It doesn't generate any error message even if the user
-  enters a wrong input.
-- [✅] It is styled using your own CSS.
-- [✅] The code follows the code and style conventions as
-  introduced in the course, is fully documented using comments
-  and doesn't contain unused or experimental code.  
-   In particular, the code should not use `print()` or
-  `console.log()` for any information the app user should see.
-  Instead, all user feedback needs to be visible in the
-  browser.
-- [✅] All exercises have been completed as per the
-  requirements and pushed to the respective GitHub repository.
+### Authentication Endpoints
+
+- POST `/signup` - Register a new user
+- POST `/login` - User login
+- POST `/logout` - User logout
+
+### Quiz Endpoints
+
+- GET `/getQuizes` - Get all available quizzes
+- GET `/getQuiz/<quizId>` - Get a quiz by ID
+- POST `/addQuiz` - Create a new quiz (admin only)
+- DELETE `/deleteQuiz/<quizId>` - Delete a quiz (admin only)
+- POST `/startQuiz/<quizId>` - Start a quiz session
+- PUT `/updateQuiz/<quizId>` - Update a quiz by ID
+- POST `/nextQuestion` - Get next question in quiz
+- POST `/submitQuiz` - Submit quiz answers
+
+## Usage
+
+### User Flow
+
+1. Create an account or login
+2. Browse available quizzes
+3. Start a quiz
+4. Answer questions and submit responses
+5. View results
+
+### Admin Flow
+
+1. Login with admin credentials
+2. Create new quizzes
+3. Manage existing quizzes
+
+## Security Features
+
+- Password hashing
+- Schema validation
+- Rate limiting on API endpoints
+- Session-based authentication
+- Admin-only routes protection
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
